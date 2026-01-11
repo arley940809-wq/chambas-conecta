@@ -471,10 +471,14 @@
       appId: "1:342153426332:web:aa5534dd8304186da00459"
     };
 
-    // ✅ UNA sola inicialización (esto era lo que te rompía todo)
+    // 🚀 Inicializar Firebase (UNA SOLA VEZ)
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
+
+    // reCAPTCHA: se crea SOLO cuando entras a "Usar teléfono"
+    let recaptcha = null;
+    let phoneConfirmation = null;
 
     // ---- UI helpers
     const $ = (id)=>document.getElementById(id);
@@ -533,6 +537,7 @@
         which = "access";
       }
 
+      // admin solo si isAdmin
       if(which === "admin" && !isAdmin){
         which = "publish";
       }
@@ -550,23 +555,14 @@
     navAccess.addEventListener("click", ()=>showBiz("access"));
     navAdmin.addEventListener("click", ()=>showBiz("admin"));
 
-    // ---- reCAPTCHA (✅ solo 1 forma correcta)
-    let recaptchaVerifier = null;
-    let phoneConfirmation = null;
-
-    function setupRecaptcha(){
-      if(recaptchaVerifier) return;
-      try{
-        recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-          size: "normal",
-          "expired-callback": () => {
-            alert("El reCAPTCHA expiró, recarga la página");
-          }
-        });
-        recaptchaVerifier.render();
-      }catch(e){
-        console.error("Error creando reCAPTCHA:", e);
-      }
+    // ---- Firebase status UI (sin try duplicado)
+    try{
+      fbStatus.className = "status ok";
+      fbStatus.textContent = "Estado Firebase: ✅ CONECTADO";
+    }catch(e){
+      fbStatus.className = "status bad";
+      fbStatus.textContent = "Estado Firebase: ❌ ERROR";
+      console.error(e);
     }
 
     // ---- Auth state
@@ -578,7 +574,7 @@
     // ✅ Admin state
     let isAdmin = false;
     let adminUnsub = null;
-    let adminCache = [];
+    let adminCache = []; // para exportar rápido
 
     function toggleAdminUI(){
       if(isAdmin){
@@ -644,6 +640,7 @@
         $("mineList").innerHTML = "";
         if(mineUnsub){ mineUnsub(); mineUnsub = null; }
 
+        // reset admin
         isAdmin = false;
         toggleAdminUI();
         adminCache = [];
@@ -666,6 +663,17 @@
       hide($("panelEmail")); show($("panelPhone"));
       setupRecaptcha();
     });
+
+    function setupRecaptcha(){
+      if(recaptcha) return;
+      try{
+        // ✅ v10 modular: auth primero, luego container id
+        recaptcha = new RecaptchaVerifier(auth, "recaptcha-container", { size:"normal" });
+        recaptcha.render().catch(()=>{});
+      }catch(e){
+        console.error(e);
+      }
+    }
 
     // ---- Email auth
     $("btnEmailRegister").addEventListener("click", async ()=>{
@@ -706,7 +714,7 @@
       if(!phone) return toast("Pon tu teléfono con código país. Ej: +53...");
       try{
         setupRecaptcha();
-        phoneConfirmation = await signInWithPhoneNumber(auth, phone, recaptchaVerifier);
+        phoneConfirmation = await signInWithPhoneNumber(auth, phone, recaptcha);
         toast("Código enviado. Revisa SMS ✅");
       }catch(e){
         console.error(e);
@@ -936,7 +944,7 @@
       if(!viewPublic.classList.contains("hide")) renderPublic();
     });
 
-    // ---- Mis ofertas
+    // ---- Mis ofertas (listener único)
     $("btnRefreshMine").addEventListener("click", ()=>attachMineListener(true));
 
     function attachMineListener(forceOnce=false){
@@ -1006,6 +1014,7 @@
       }
     }
 
+    // ---- Exportar / importar (MIS ofertas)
     function download(filename, text){
       const a = document.createElement("a");
       a.href = URL.createObjectURL(new Blob([text], {type:"application/json"}));
@@ -1034,7 +1043,7 @@
       copyToClipboard(json, ()=>toast("Copiado ✅"), ()=>toast("Copia manual abierta."));
     });
 
-    // ---- ADMIN
+    // ---- ADMIN: listener y herramientas
     $("btnRefreshAdmin").addEventListener("click", ()=>attachAdminListener(true));
     $("searchAdmin").addEventListener("input", ()=>{
       if(!secAdmin.classList.contains("hide")) renderAdminFromCache();
