@@ -1,1316 +1,1035 @@
+
 <!doctype html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chambas Conecta | Negocios y Servicios</title>
-  
-  <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#0b1a34">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chambas Conecta</title>
   <style>
     :root{
-      --bg:#0b1220; --text:#e9eefc; --muted:#a9b6dd;
-      --brand:#4cc9f0; --brand2:#7c5cff; --ok:#2dd4bf; --danger:#ff4d6d;
-      --border:rgba(255,255,255,.10); --shadow: 0 18px 45px rgba(0,0,0,.45);
+      --bg0:#061022;
+      --bg1:#0b1a34;
+      --card:rgba(255,255,255,.06);
+      --line:rgba(255,255,255,.10);
+      --text:#eaf0ff;
+      --muted:rgba(234,240,255,.70);
+      --brand1:#36d1ff;
+      --brand2:#7c5cff;
+      --ok:#22c55e;
+      --danger:#ff4d6d;
       --radius:18px;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
     }
-    *{ box-sizing:border-box; }
+    *{box-sizing:border-box}
     body{
-      margin:0; font-family: Arial, Helvetica, sans-serif;
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color:var(--text);
       background:
-        radial-gradient(1200px 700px at 20% 10%, rgba(124,92,255,.22), transparent 60%),
-        radial-gradient(1000px 600px at 85% 30%, rgba(76,201,240,.18), transparent 55%),
-        radial-gradient(900px 500px at 50% 90%, rgba(45,212,191,.10), transparent 60%),
-        var(--bg);
+        radial-gradient(1200px 700px at 10% 10%, rgba(124,92,255,.22), transparent 55%),
+        radial-gradient(1200px 700px at 90% 20%, rgba(54,209,255,.18), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
       min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:20px;
     }
-
-    .app{
-      width:min(1100px, 100%);
-      display:grid;
-      grid-template-columns: 1.05fr .95fr;
-      gap:18px;
-    }
-
-    .card{
-      background: rgba(255,255,255,.06);
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      backdrop-filter: blur(10px);
-    }
-
-    .hero{
-      padding:26px 26px 22px 26px;
-      position:relative;
-      min-height: 420px;
-    }
-
-    .badge{
-      display:inline-flex;
-      gap:8px;
-      align-items:center;
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      background: rgba(0,0,0,.25);
-      color:var(--muted);
-      font-size:13px;
-    }
-
-    .dot{
-      width:10px;height:10px;border-radius:50%;
-      background: linear-gradient(135deg, var(--brand), var(--brand2));
-      box-shadow:0 0 16px rgba(124,92,255,.8);
-    }
-
-    h1{
-      margin:14px 0 8px 0;
-      font-size:34px;
-      letter-spacing:.2px;
-      line-height:1.15;
-    }
-    .subtitle{
-      margin:0;
-      color:var(--muted);
-      font-size:15px;
-      line-height:1.6;
-      max-width: 52ch;
-    }
-
-    .features{
-      margin-top:18px;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-    }
-    .feat{
-      padding:12px 12px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background: rgba(0,0,0,.18);
-    }
-    .feat b{ display:block; margin-bottom:4px; }
-    .feat span{ color:var(--muted); font-size:13px; line-height:1.4; }
-
-    .login{ padding:22px; }
-    .login h2{ margin:0 0 10px 0; font-size:20px; }
-    .muted{ color:var(--muted); font-size:13px; margin:0 0 16px 0; }
-
-    label{ display:block; font-size:13px; color:var(--muted); margin:10px 0 6px; }
-    input, textarea, select{
-      width:100%;
-      padding:12px 12px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      outline:none;
-      background: rgba(0,0,0,.25);
-      color:var(--text);
-      font-size:15px;
-    }
-    textarea{ min-height: 96px; resize: vertical; }
-    input:focus, textarea:focus, select:focus{
-      border-color: rgba(76,201,240,.6);
-      box-shadow: 0 0 0 3px rgba(76,201,240,.18);
-    }
-
-    .row{
-      display:flex; gap:10px; align-items:center; margin-top:14px;
-    }
-
-    .btn{
-      width:100%;
-      padding:12px 14px;
-      border-radius:14px;
-      border:0;
-      cursor:pointer;
-      font-weight:700;
-      color:#07101f;
-      background: linear-gradient(135deg, var(--brand), var(--brand2));
-      box-shadow: 0 10px 24px rgba(124,92,255,.25);
-      transition: transform .08s ease;
-      text-align:center;
-      text-decoration:none;
-      display:inline-block;
-    }
-    .btn:active{ transform: scale(.98); }
-    .btn.secondary{
-      background: rgba(255,255,255,.10);
-      color: var(--text);
-      border:1px solid var(--border);
-      box-shadow:none;
-    }
-    .btn.danger{
-      background: rgba(255,77,109,.16);
-      color: #ffd4dc;
-      border:1px solid rgba(255,77,109,.35);
-      box-shadow:none;
-    }
-    .btn.ok{
-      background: rgba(45,212,191,.18);
-      color:#c9fff7;
-      border:1px solid rgba(45,212,191,.35);
-      box-shadow:none;
-    }
-
-    .alert{
-      margin-top:12px;
-      padding:10px 12px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      font-size:13px;
-      display:none;
-      line-height:1.35;
-    }
-    .alert.ok{ display:block; border-color: rgba(45,212,191,.45); background: rgba(45,212,191,.12); color:#c9fff7; }
-    .alert.err{ display:block; border-color: rgba(255,77,109,.45); background: rgba(255,77,109,.10); color:#ffd4dc; }
-
-    .small{
-      font-size:12px; color:var(--muted); margin-top:12px; line-height:1.4;
-    }
-
-    /* PANTALLAS */
-    .panel, .publish, .public{
-      grid-column: 1 / -1;
-      padding:22px;
-      display:none;
-    }
-
-    .topbar{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:16px;
-    }
-    .who{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      color:var(--muted);
-      font-size:13px;
-    }
-    .who b{ color:var(--text); }
+    .wrap{max-width:760px;margin:0 auto;padding:18px 14px 40px;}
     .pill{
-      padding:7px 10px;
-      border:1px solid var(--border);
-      border-radius:999px;
-      background: rgba(0,0,0,.22);
+      display:inline-flex;align-items:center;gap:10px;
+      padding:10px 14px;border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
       color:var(--muted);
-      font-size:12px;
+      width:max-content;
     }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:14px;
-    }
-    .box{
-      padding:14px;
-      border-radius:16px;
-      border:1px solid var(--border);
-      background: rgba(0,0,0,.18);
-    }
-    .box h3{ margin:0 0 8px 0; font-size:16px; }
-    .box p{ margin:0; color:var(--muted); font-size:13px; line-height:1.5; }
-
-    .cta{
-      margin-top:14px;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    /* Publicar oferta */
-    .two{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:14px;
-      align-items:start;
-    }
-    .preview{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .imgwrap{
-      width:100%;
-      border:1px solid var(--border);
-      border-radius:16px;
+    h1{font-size:52px;line-height:1;margin:16px 0 10px;letter-spacing:-.02em;}
+    .sub{color:var(--muted);font-size:18px;margin:0 0 18px;}
+    .grid{display:grid;gap:14px;margin-top:14px;}
+    .card{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:var(--card);
+      box-shadow:var(--shadow);
       overflow:hidden;
-      background: rgba(0,0,0,.22);
-      min-height: 220px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:var(--muted);
-      font-size:13px;
-      text-align:center;
-      padding:10px;
     }
-    .imgwrap img{
+    .card .hd{padding:16px 16px 0}
+    .card .bd{padding:16px}
+    .title{
+      font-weight:700;font-size:26px;margin:0 0 8px;display:flex;align-items:center;gap:10px;
+    }
+    .muted{color:var(--muted)}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      padding:12px 14px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:650;
+      transition:.15s ease;
+      min-width:140px;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn.primary{
+      border:none;
+      background:linear-gradient(90deg, var(--brand1), var(--brand2));
+      color:#061022;
+    }
+    .btn.danger{border:1px solid rgba(255,77,109,.35); background:rgba(255,77,109,.10)}
+    .btn.secondary{background:rgba(255,255,255,.05)}
+    .btn.small{padding:10px 12px; min-width:auto}
+    .btn.wide{min-width:170px}
+    .tag{
+      display:inline-flex;align-items:center;gap:8px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      padding:8px 12px;border-radius:999px;color:var(--muted);
+      font-size:14px;
+    }
+    .input, select, textarea{
       width:100%;
-      height:auto;
-      display:none;
+      background:rgba(0,0,0,.18);
+      border:1px solid var(--line);
+      color:var(--text);
+      border-radius:14px;
+      padding:12px 12px;
+      outline:none;
     }
+    label{display:block;margin:10px 0 6px;color:var(--muted);font-weight:650}
+    textarea{min-height:90px;resize:vertical}
+    .sep{height:1px;background:var(--line);margin:14px 0}
+    .hide{display:none !important}
+    .status{
+      display:inline-flex;align-items:center;gap:10px;
+      padding:10px 12px;border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.12);
+      color:var(--muted);
+    }
+    .status.ok{border-color:rgba(34,197,94,.35); background:rgba(34,197,94,.10); color:#bff7d2}
+    .status.bad{border-color:rgba(255,77,109,.35); background:rgba(255,77,109,.10); color:#ffd2da}
 
-    /* Cards ofertas */
-    .list{
-      margin-top:14px;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-    }
+    /* ofertas */
     .offer{
-      border:1px solid var(--border);
-      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      border-radius:18px;
       overflow:hidden;
-      background: rgba(0,0,0,.18);
     }
-    .offer .pic{
+    .offer img{width:100%; height:220px; object-fit:cover; display:block; background:#0b0f1a}
+    .imgph{
       width:100%;
-      height:170px;
-      background: rgba(255,255,255,.06);
+      height:220px;
+      background:rgba(0,0,0,.22);
       display:flex;
       align-items:center;
       justify-content:center;
-      overflow:hidden;
+      color:rgba(234,240,255,.55);
+      border-bottom:1px solid var(--line);
+      font-weight:700;
+      letter-spacing:.02em;
     }
-    .offer .pic img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-    }
-    .offer .body{
+    .offer .p{padding:14px}
+    .offer h3{margin:0 0 10px;font-size:28px;line-height:1.1;word-break:break-word}
+    .offer .meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+    .offer .meta .tag strong{color:#9ff3ff}
+    .offer .actions{display:grid;gap:10px;grid-template-columns:1fr}
+    .offer .actions .btn{width:100%}
+
+    /* modal */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
+    .dialog{max-width:720px;width:100%;border:1px solid var(--line);border-radius:22px;background:linear-gradient(180deg, rgba(15,23,42,.95), rgba(2,6,23,.95));box-shadow:var(--shadow);padding:16px}
+    .dialog h3{margin:0 0 10px;font-size:22px}
+    .dialog textarea{min-height:200px}
+    .right{margin-left:auto}
+    .tiny{font-size:12px;color:var(--muted)}
+
+    /* Business Panel */
+    .panelNote{
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.12);
+      border-radius:16px;
       padding:12px;
-    }
-    .offer .title{
-      font-weight:800;
-      margin:0 0 6px 0;
-      font-size:15px;
-    }
-    .offer .meta{
-      margin:0 0 8px 0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.35;
-    }
-    .offer .actions{
-      display:flex;
-      gap:10px;
-      margin-top:10px;
-      flex-wrap:wrap;
-    }
-    .chip{
-      display:inline-flex;
-      gap:8px;
-      align-items:center;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.06);
-      color: var(--muted);
-      font-size:12px;
-    }
-    .hr{
-      height:1px;
-      background: rgba(255,255,255,.10);
-      margin: 12px 0;
-    }
-
-    /* Filtros público */
-    .filters{
-      display:grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      gap:10px;
-      align-items:end;
-      margin-top:8px;
-    }
-
-    @media (max-width: 900px){
-      .app{ grid-template-columns: 1fr; }
-      .hero{ min-height: unset; }
-      .features{ grid-template-columns:1fr; }
-      .grid{ grid-template-columns:1fr; }
-      .two{ grid-template-columns:1fr; }
-      .list{ grid-template-columns:1fr; }
-      .filters{ grid-template-columns:1fr; }
     }
   </style>
 </head>
-
 <body>
-  <div class="app">
-    <!-- HOME / HERO -->
-    <div class="card hero" id="leftCard">
-      <div class="badge"><span class="dot"></span> Plataforma local • Municipio Chambas</div>
-      <h1>Chambas Conecta</h1>
-      <p class="subtitle">
-        Un lugar para conectar <b>negocios</b> y <b>clientes</b>: ofertas con precios, fotos y contacto.
-      </p>
-
-      <div class="features">
-        <div class="feat"><b>🌐 Público</b><span>Clientes ven ofertas sin login y pueden buscar.</span></div>
-        <div class="feat"><b>📣 Ofertas</b><span>Negocios publican con precio obligatorio.</span></div>
-        <div class="feat"><b>💬 Contacto</b><span>Botones para llamar y WhatsApp.</span></div>
-        <div class="feat"><b>🔒 Acceso</b><span>Login solo para publicar.</span></div>
+  <div class="wrap">
+    <div class="row" style="align-items:flex-start; gap:14px;">
+      <div style="flex:1">
+        <div class="pill">🟣 Plataforma local • Municipio Chambas</div>
+        <h1>Chambas<br/>Conecta</h1>
+        <p class="sub">Un lugar para conectar <b>negocios</b> y <b>clientes</b>: ofertas con precios, fotos y contacto.</p>
       </div>
-
-      <div class="cta">
-        <button class="btn" type="button" id="btnGoPublic">Ver ofertas (Público)</button>
-        <button class="btn secondary" type="button" id="btnGoLogin">Entrar (Negocio/Admin)</button>
-      </div>
-
-      <p class="small">
-        Nota: Por ahora es local (teléfono). Luego lo conectamos a internet para que sea “real” para todos.
-      </p>
+      <div class="status" id="fbStatus">Estado Firebase: ⏳ verificando…</div>
     </div>
 
-    <!-- LOGIN -->
-    <div class="card login" id="loginCard">
-      <h2>Iniciar sesión</h2>
-      <p class="muted">Prueba: <b>admin/1234</b> o <b>negocio/2025</b></p>
+    <div class="grid">
 
-      <form id="loginForm" autocomplete="on">
-        <label for="user">Usuario</label>
-        <input id="user" name="user" type="text" placeholder="Ej: admin" required />
-
-        <label for="pass">Contraseña</label>
-        <input id="pass" name="pass" type="password" placeholder="••••" required />
-
-        <div class="row">
-          <button class="btn" type="submit">Entrar</button>
+      <!-- Público -->
+      <div class="card" id="cardPublic">
+        <div class="hd">
+          <div class="title">🌐 Público</div>
+          <p class="muted">Clientes ven ofertas sin login y pueden buscar.</p>
         </div>
-
-        <div class="row">
-          <button class="btn secondary" type="button" id="btnDemo">Rellenar datos de prueba</button>
-        </div>
-
-        <div class="row">
-          <button class="btn secondary" type="button" id="btnPublicFromLogin">Ver ofertas (Público)</button>
-        </div>
-
-        <div id="msg" class="alert"></div>
-
-        <div class="row">
-          <button class="btn secondary" type="button" id="btnBackHomeFromLogin">Volver al inicio</button>
-        </div>
-      </form>
-    </div>
-
-    <!-- PANEL -->
-    <div class="card panel" id="panelCard">
-      <div class="topbar">
-        <div class="who">
-          <span class="pill">✅ Sesión activa</span>
-          <span>Usuario: <b id="whoUser">-</b></span>
-        </div>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn secondary" type="button" id="btnPublicFromPanel">Ver público</button>
-          <button class="btn secondary" type="button" id="btnClear">Borrar datos</button>
-          <button class="btn" type="button" id="btnLogout">Salir</button>
+        <div class="bd">
+          <div class="row">
+            <button class="btn primary" id="btnGoPublic">Ver ofertas (Público)</button>
+            <button class="btn" id="btnGoBusiness">Entrar (Negocio)</button>
+          </div>
+          <div class="sep"></div>
+          <label>Buscar</label>
+          <input class="input" id="searchPublic" placeholder="Ej: pizza, pollo, salón, reparación..." />
         </div>
       </div>
 
-      <div class="grid">
-        <div class="box">
-          <h3>📣 Publicar oferta</h3>
-          <p>
-            Publica productos con <b>foto</b>, <b>precio obligatorio</b>,
-            <b>moneda libre</b>, descripción y contacto.
-          </p>
-        </div>
-        <div class="box">
-          <h3>🌐 Público</h3>
-          <p>
-            Así lo ven los clientes: búsqueda, filtros y botones de contacto.
-          </p>
-        </div>
-        <div class="box">
-          <h3>🧰 Servicios</h3>
-          <p>
-            Próximo paso: publicar servicios (plomero, barbería, etc.).
-          </p>
-        </div>
-        <div class="box">
-          <h3>⚙️ Futuro</h3>
-          <p>
-            Luego conectamos a servidor para que sea real para todos.
-          </p>
+      <!-- Vista Pública de Ofertas -->
+      <div class="card hide" id="viewPublic">
+        <div class="bd">
+          <div class="row">
+            <div class="title" style="margin:0">📣 Ofertas (Público)</div>
+            <button class="btn small right" id="btnBackHome1">Inicio</button>
+          </div>
+          <div class="sep"></div>
+          <div id="publicList" class="grid"></div>
         </div>
       </div>
 
-      <div class="cta">
-        <button class="btn" type="button" id="btnNext">Continuar: Publicar oferta</button>
-        <button class="btn secondary" type="button" id="btnBackToLogin">Volver al login</button>
-      </div>
-    </div>
+      <!-- Negocio -->
+      <div class="card hide" id="viewBusiness">
+        <div class="bd">
+          <div class="row">
+            <div class="title" style="margin:0">🔐 Negocio</div>
+            <button class="btn small right" id="btnBackHome2">Inicio</button>
+          </div>
+          <p class="muted">Panel organizado: elige una sección (no sale todo seguido).</p>
 
-    <!-- PUBLICAR OFERTA -->
-    <div class="card publish" id="publishCard">
-      <div class="topbar">
-        <div class="who">
-          <span class="pill">📣 Publicar oferta</span>
-          <span>Usuario: <b id="whoUser2">-</b></span>
-        </div>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn secondary" type="button" id="btnBackPanel">Volver al panel</button>
-          <button class="btn secondary" type="button" id="btnPublicFromPublish">Ver público</button>
-          <button class="btn" type="button" id="btnLogout2">Salir</button>
-        </div>
-      </div>
-
-      <div class="two">
-        <div class="box">
-          <h3>Formulario</h3>
-          <p class="muted" style="margin-top:-2px;">Precio obligatorio ✅. Moneda libre (CUP, USD, etc.).</p>
-
-          <form id="offerForm">
-            <label for="oTitle">Título / Producto</label>
-            <input id="oTitle" type="text" placeholder="Ej: Cemento, Aceite, Pollo..." required />
-
-            <div class="row" style="margin-top:10px;">
-              <div style="flex:1;">
-                <label for="oPrice">Precio (obligatorio)</label>
-                <input id="oPrice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="Ej: 4000" required />
+          <!-- barra panel -->
+          <div class="panelNote">
+            <div class="row" style="justify-content:space-between">
+              <div class="row">
+                <span class="tag">👤 Sesión: <b id="sessTxt">No</b></span>
               </div>
-              <div style="flex:1;">
-                <label for="oCurrency">Moneda (libre)</label>
-                <input id="oCurrency" type="text" placeholder="Ej: CUP / USD" />
-              </div>
+              <button class="btn small" id="btnLogout">Salir</button>
             </div>
 
-            <label for="oDesc">Descripción</label>
-            <textarea id="oDesc" placeholder="Detalles: cantidad, marca, entrega, etc."></textarea>
-
-            <div class="row" style="margin-top:10px;">
-              <div style="flex:1;">
-                <label for="oPhone">Teléfono</label>
-                <input id="oPhone" type="tel" placeholder="Ej: +53..." />
-              </div>
-              <div style="flex:1;">
-                <label for="oWhats">WhatsApp</label>
-                <input id="oWhats" type="tel" placeholder="Ej: +53..." />
-              </div>
-            </div>
-
-            <label for="oPhoto">Foto (opcional)</label>
-            <input id="oPhoto" type="file" accept="image/*" />
+            <div class="sep"></div>
 
             <div class="row">
-              <button class="btn" type="submit">Guardar oferta</button>
+              <button class="btn small wide primary" id="navPublish">📝 Publicar</button>
+              <button class="btn small wide" id="navMine">📌 Mis ofertas</button>
+              <button class="btn small wide" id="navProfile">🏪 Perfil</button>
+              <button class="btn small wide" id="navAccess">🔐 Acceso</button>
             </div>
-            <div class="row">
-              <button class="btn secondary" type="button" id="btnClearForm">Limpiar formulario</button>
+            <div class="tiny" style="margin-top:8px">Tip: si no has iniciado sesión, entra en <b>Acceso</b>.</div>
+          </div>
+
+          <div class="sep"></div>
+
+          <!-- SECCIÓN: ACCESO -->
+          <div id="secAccess">
+            <div class="card" style="box-shadow:none">
+              <div class="bd">
+                <div class="title" style="font-size:20px;margin:0 0 6px;">🔐 Acceso</div>
+                <p class="muted">Puedes entrar con <b>correo</b> o con <b>teléfono</b>. Una de las dos.</p>
+
+                <div class="row">
+                  <button class="btn small" id="tabEmail">Usar correo</button>
+                  <button class="btn small secondary" id="tabPhone">Usar teléfono</button>
+                </div>
+
+                <!-- correo -->
+                <div id="panelEmail" style="margin-top:10px;">
+                  <label>Correo</label>
+                  <input class="input" id="email" placeholder="ej: negocio@gmail.com"/>
+
+                  <label>Contraseña</label>
+                  <input class="input" id="pass" type="password" placeholder="mínimo 6"/>
+
+                  <div class="row" style="margin-top:10px;">
+                    <button class="btn primary" id="btnEmailLogin">Entrar</button>
+                    <button class="btn" id="btnEmailRegister">Crear cuenta</button>
+                  </div>
+                  <p class="tiny">* Al crear cuenta, se guarda tu perfil como <b>business</b> y ya puedes publicar.</p>
+                </div>
+
+                <!-- teléfono -->
+                <div id="panelPhone" class="hide" style="margin-top:10px;">
+                  <label>Teléfono (incluye código país)</label>
+                  <input class="input" id="phone" placeholder="+53xxxxxxx o +1xxxxxxxxxx"/>
+
+                  <div id="recaptcha-container" style="margin:12px 0;"></div>
+
+                  <div class="row" style="margin-top:10px;">
+                    <button class="btn primary" id="btnSendCode">Enviar código SMS</button>
+                  </div>
+
+                  <label>Código (OTP)</label>
+                  <input class="input" id="otp" placeholder="123456"/>
+
+                  <div class="row" style="margin-top:10px;">
+                    <button class="btn" id="btnVerifyCode">Verificar y Entrar</button>
+                  </div>
+
+                  <p class="tiny">* En teléfono, cuando entras por primera vez, también se crea tu perfil como <b>business</b>.</p>
+                </div>
+              </div>
             </div>
-
-            <div id="offerMsg" class="alert"></div>
-
-            <p class="small">Consejo: usa fotos no muy pesadas para que no se llene el almacenamiento.</p>
-          </form>
-        </div>
-
-        <div class="preview box">
-          <h3>Vista previa</h3>
-          <div class="imgwrap" id="imgWrap">
-            <div id="imgHint">Aquí verás la foto seleccionada.</div>
-            <img id="imgPreview" alt="Vista previa" />
           </div>
 
-          <div class="hr"></div>
+          <!-- SECCIÓN: PERFIL -->
+          <div id="secProfile" class="hide">
+            <div class="card" style="box-shadow:none">
+              <div class="bd">
+                <div class="title" style="font-size:20px;margin:0 0 6px;">🏪 Perfil del negocio</div>
+                <p class="muted">Esto se guarda en Firebase (y se usa al publicar).</p>
 
-          <div class="chip">📦 <span id="pvTitle">Título…</span></div>
-          <div class="chip">💲 <span id="pvPrice">Precio…</span> <span id="pvCurrency"></span></div>
-          <div class="chip">📝 <span id="pvDesc">Descripción…</span></div>
-          <div class="chip">📞 <span id="pvPhone">Teléfono…</span></div>
-          <div class="chip">💬 <span id="pvWhats">WhatsApp…</span></div>
-        </div>
-      </div>
+                <label>Nombre del negocio</label>
+                <input class="input" id="bizName" placeholder="Ej: Pizza Hut Chambas"/>
 
-      <div class="hr"></div>
+                <label>Teléfono</label>
+                <input class="input" id="bizPhone" placeholder="+53..."/>
 
-      <div class="topbar" style="margin-bottom:10px;">
-        <div class="who">
-          <span class="pill">📋 Ofertas guardadas</span>
-          <span class="muted">Se guardan en tu teléfono</span>
-        </div>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn secondary" type="button" id="btnExport">Exportar (copiar)</button>
-          <button class="btn danger" type="button" id="btnDeleteAll">Borrar todas</button>
-        </div>
-      </div>
+                <label>WhatsApp</label>
+                <input class="input" id="bizWa" placeholder="+53..."/>
 
-      <div id="offersList" class="list"></div>
-      <div id="offersEmpty" class="muted" style="display:none;">Aún no hay ofertas guardadas. Crea la primera 👆</div>
-    </div>
-
-    <!-- PÚBLICO (CLIENTES) -->
-    <div class="card public" id="publicCard">
-      <div class="topbar">
-        <div class="who">
-          <span class="pill">🌐 Público</span>
-          <span class="muted">Ofertas para clientes (sin login)</span>
-        </div>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn secondary" type="button" id="btnPublicRefresh">Actualizar</button>
-          <button class="btn secondary" type="button" id="btnPublicBack">Volver</button>
-          <button class="btn" type="button" id="btnPublicLogin">Entrar</button>
-        </div>
-      </div>
-
-      <div class="box">
-        <h3>Buscar y filtrar</h3>
-
-        <div class="filters">
-          <div>
-            <label for="fSearch">Buscar (título o descripción)</label>
-            <input id="fSearch" type="text" placeholder="Ej: cemento, pollo, aceite..." />
+                <div class="row" style="margin-top:10px;">
+                  <button class="btn" id="btnSaveProfile">Guardar perfil</button>
+                </div>
+              </div>
+            </div>
           </div>
-          <div>
-            <label for="fCurrency">Moneda</label>
-            <input id="fCurrency" type="text" placeholder="Ej: CUP" />
-          </div>
-          <div>
-            <label for="fOrder">Orden</label>
-            <select id="fOrder">
-              <option value="new">Más nuevas</option>
-              <option value="old">Más viejas</option>
-            </select>
-          </div>
-        </div>
 
-        <div class="row">
-          <button class="btn secondary" type="button" id="btnPublicClear">Limpiar filtros</button>
-          <button class="btn secondary" type="button" id="btnPublicShareApp">Compartir app</button>
-        </div>
+          <!-- SECCIÓN: PUBLICAR -->
+          <div id="secPublish" class="hide">
+            <div class="card" style="box-shadow:none">
+              <div class="bd">
+                <div class="title" style="font-size:20px;margin:0 0 6px;">📝 Publicar / Editar oferta</div>
 
-        <p class="small">
-          Por ahora “Público” muestra ofertas guardadas en ESTE teléfono. Cuando conectemos a servidor, será público para todos.
-        </p>
+                <label>Categoría</label>
+                <select id="categoria">
+                  <option>Restaurantes</option>
+                  <option>Comida</option>
+                  <option>Servicios</option>
+                  <option>Tiendas</option>
+                  <option>Salud</option>
+                  <option>Otros</option>
+                </select>
+
+                <label>Título</label>
+                <input class="input" id="title" placeholder="Ej: Combo pizza + refresco"/>
+
+                <label>Precio</label>
+                <input class="input" id="price" placeholder="Ej: 1200"/>
+
+                <label>Moneda</label>
+                <input class="input" id="currency" placeholder="CUP / USD / MLC (libre)" value="CUP"/>
+
+                <label>Descripción</label>
+                <textarea id="desc" placeholder="Describe la oferta..."></textarea>
+
+                <label>Foto (opcional)</label>
+                <input class="input" id="photo" type="file" accept="image/*"/>
+
+                <div class="row" style="margin-top:10px;">
+                  <button class="btn primary" id="btnPublish">Publicar</button>
+                  <button class="btn secondary" id="btnClear">Limpiar</button>
+                  <button class="btn danger" id="btnCancelEdit">Cancelar edición</button>
+                </div>
+                <p class="tiny">* La foto se guarda dentro del registro (base64). Luego podemos moverla a Storage.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN: MIS OFERTAS -->
+          <div id="secMine" class="hide">
+            <div class="card" style="box-shadow:none">
+              <div class="bd">
+                <div class="row">
+                  <div class="title" style="font-size:20px;margin:0">📌 Mis ofertas</div>
+                  <button class="btn small right" id="btnRefreshMine">Actualizar</button>
+                </div>
+                <div class="sep"></div>
+
+                <div class="row">
+                  <button class="btn" id="btnExportCopy">Exportar (copiar)</button>
+                  <button class="btn" id="btnExportFile">Exportar (archivo)</button>
+                  <button class="btn" id="btnImportOpen">Importar</button>
+                </div>
+
+                <div class="sep"></div>
+                <div id="mineList" class="grid"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
 
-      <div class="hr"></div>
-
-      <div class="topbar" style="margin-bottom:10px;">
-        <div class="who">
-          <span class="pill">📣 Ofertas</span>
-          <span class="muted" id="publicCount">0</span>
-        </div>
-      </div>
-
-      <div id="publicList" class="list"></div>
-      <div id="publicEmpty" class="muted" style="display:none;">No hay ofertas para mostrar todavía.</div>
     </div>
   </div>
 
-  <script>
-    // =========================
-    // UTILIDADES
-    // =========================
-    function escapeHtml(s){
-      return String(s ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
+  <!-- MODAL: IMPORTAR -->
+  <div class="modal" id="importModal">
+    <div class="dialog">
+      <div class="row">
+        <h3 style="margin:0">📥 Importar ofertas</h3>
+        <button class="btn small right" id="btnImportClose">Cerrar</button>
+      </div>
+      <p class="muted">Pega aquí el JSON exportado. Importa SOLO a tu cuenta (tú serás el ownerUid).</p>
+      <label for="importText">JSON</label>
+      <textarea id="importText" placeholder='[ { "title":"...", "price":"...", ... } ]'></textarea>
+      <div class="row" style="margin-top:10px;">
+        <button class="btn primary" id="btnImportDo">Importar</button>
+      </div>
+    </div>
+  </div>
 
-    function normalizePhone(p){
-      return String(p||"").trim().replace(/\s+/g,"");
-    }
+  <!-- MODAL: COPIA MANUAL -->
+  <div class="modal" id="copyModal">
+    <div class="dialog">
+      <div class="row">
+        <h3 style="margin:0">📋 Copiar exportación</h3>
+        <button class="btn small right" id="btnCopyClose">Cerrar</button>
+      </div>
+      <p class="muted">Tu navegador bloqueó el portapapeles. Mantén presionado dentro del cuadro y toca <b>Copiar</b>.</p>
+      <label for="copyText">JSON</label>
+      <textarea id="copyText" readonly></textarea>
+      <div class="row" style="margin-top:10px;">
+        <button class="btn secondary" type="button" id="btnSelectAll">Seleccionar todo</button>
+      </div>
+    </div>
+  </div>
 
-    function fmtMoney(price, currency){
-      const p = (price === "" || price === null || typeof price === "undefined") ? "" : String(price);
-      const c = (currency || "").trim();
-      return c ? `${p} ${c}` : p;
-    }
+  <script type="module">
+    // Firebase (CDN modular)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      RecaptchaVerifier,
+      signInWithPhoneNumber
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import {
+      getDatabase,
+      ref,
+      push,
+      set,
+      update,
+      remove,
+      get,
+      onValue,
+      query,
+      orderByChild,
+      equalTo
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
-    async function shareText(title, text){
-      try{
-        if(navigator.share){
-          await navigator.share({ title, text });
-          return true;
-        }
-      }catch(e){}
-      return false;
-    }
+    // ✅ Tu config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAWM3XVAxvNMAlCB_hhEhFZan2xRONCro0",
+      authDomain: "chambas-conecta.firebaseapp.com",
+      databaseURL: "https://chambas-conecta-default-rtdb.firebaseio.com",
+      projectId: "chambas-conecta",
+      storageBucket: "chambas-conecta.firebasestorage.app",
+      messagingSenderId: "342153426332",
+      appId: "1:342153426332:web:aa5534dd8304186da00459"
+    };
 
-    function copyToClipboard(text, okCb, errCb){
-      if(navigator.clipboard && navigator.clipboard.writeText){
-        navigator.clipboard.writeText(text).then(()=> okCb && okCb()).catch(()=> fallbackCopy(text, okCb, errCb));
-      } else {
-        fallbackCopy(text, okCb, errCb);
-      }
-    }
+    // ---- UI helpers
+    const $ = (id)=>document.getElementById(id);
+    const show = (el)=>el.classList.remove("hide");
+    const hide = (el)=>el.classList.add("hide");
+    const toast = (msg)=>alert(msg);
 
-    function fallbackCopy(text, okCb, errCb){
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      try{
-        document.execCommand("copy");
-        okCb && okCb();
-      }catch(e){
-        errCb && errCb();
-        alert(text);
-      }
-      document.body.removeChild(ta);
-    }
+    // ---- Views
+    const cardPublic = $("cardPublic");
+    const viewPublic = $("viewPublic");
+    const viewBusiness = $("viewBusiness");
+    const fbStatus = $("fbStatus");
 
-    function placeholderImg(){
-      return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
-        `<svg xmlns='http://www.w3.org/2000/svg' width='600' height='320'>
-          <rect width='100%' height='100%' fill='rgba(255,255,255,0.06)'/>
-          <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle'
-            fill='rgba(233,238,252,0.55)' font-family='Arial' font-size='18'>Sin foto</text>
-        </svg>`
-      );
+    function goHome(){
+      show(cardPublic); hide(viewPublic); hide(viewBusiness);
     }
-
-    // =========================
-    // STORAGE
-    // =========================
-    function getOffers(){
-      try{
-        const raw = localStorage.getItem("cc_offers");
-        return raw ? JSON.parse(raw) : [];
-      }catch(e){
-        return [];
-      }
-    }
-    function setOffers(list){
-      localStorage.setItem("cc_offers", JSON.stringify(list));
-    }
-
-    // =========================
-    // NAVEGACIÓN
-    // =========================
-    const loginCard = document.getElementById("loginCard");
-    const panelCard = document.getElementById("panelCard");
-    const publishCard = document.getElementById("publishCard");
-    const publicCard = document.getElementById("publicCard");
-
-    function showOnly(screen){
-      // screen: "home" | "login" | "panel" | "publish" | "public"
-      loginCard.style.display = (screen === "login") ? "block" : "none";
-      panelCard.style.display = (screen === "panel") ? "block" : "none";
-      publishCard.style.display = (screen === "publish") ? "block" : "none";
-      publicCard.style.display = (screen === "public") ? "block" : "none";
-      if(screen === "home"){
-        loginCard.style.display = "none";
-        panelCard.style.display = "none";
-        publishCard.style.display = "none";
-        publicCard.style.display = "none";
-      }
-    }
-
-    function currentUser(){
-      return localStorage.getItem("cc_user");
-    }
-
-    // recordar desde dónde abrimos "Público"
-    function lastScreen(){
-      return sessionStorage.getItem("cc_last_screen") || "home";
-    }
-    function setLastScreen(s){
-      sessionStorage.setItem("cc_last_screen", s);
-    }
-
-    // =========================
-    // LOGIN
-    // =========================
-    const USERS = { "admin": "1234", "negocio": "2025" };
-
-    const loginForm = document.getElementById("loginForm");
-    const msg = document.getElementById("msg");
-    const userInput = document.getElementById("user");
-    const passInput = document.getElementById("pass");
-
-    const whoUser = document.getElementById("whoUser");
-    const whoUser2 = document.getElementById("whoUser2");
-
-    const btnGoPublic = document.getElementById("btnGoPublic");
-    const btnGoLogin = document.getElementById("btnGoLogin");
-    const btnDemo = document.getElementById("btnDemo");
-    const btnLogout = document.getElementById("btnLogout");
-    const btnLogout2 = document.getElementById("btnLogout2");
-    const btnClear = document.getElementById("btnClear");
-    const btnNext = document.getElementById("btnNext");
-    const btnBackToLogin = document.getElementById("btnBackToLogin");
-    const btnBackPanel = document.getElementById("btnBackPanel");
-
-    const btnPublicFromLogin = document.getElementById("btnPublicFromLogin");
-    const btnPublicFromPanel = document.getElementById("btnPublicFromPanel");
-    const btnPublicFromPublish = document.getElementById("btnPublicFromPublish");
-    const btnBackHomeFromLogin = document.getElementById("btnBackHomeFromLogin");
-
-    function showMsg(type, text){
-      msg.className = "alert " + (type === "ok" ? "ok" : "err");
-      msg.textContent = text;
-    }
-    function clearMsg(){
-      msg.className = "alert";
-      msg.textContent = "";
-    }
-
-    function setUserUI(){
-      const u = currentUser() || "-";
-      whoUser.textContent = u;
-      whoUser2.textContent = u;
-    }
-
-    function showLogin(){
-      showOnly("login");
-      clearMsg();
-      passInput.value = "";
-      userInput.focus();
-    }
-    function showPanel(){
-      setUserUI();
-      showOnly("panel");
-      clearMsg();
-    }
-    function showPublish(){
-      setUserUI();
-      showOnly("publish");
-      renderOffers();
-      clearOfferMsg();
-    }
-    function showPublic(from){
-      setLastScreen(from || "home");
-      showOnly("public");
+    function goPublic(){
+      hide(cardPublic); show(viewPublic); hide(viewBusiness);
       renderPublic();
     }
+    function goBusiness(){
+      hide(cardPublic); hide(viewPublic); show(viewBusiness);
+      // si no hay sesión -> acceso; si hay -> publicar
+      if(currentUser) showBiz("publish"); else showBiz("access");
+    }
 
-    btnGoLogin.addEventListener("click", showLogin);
-    btnGoPublic.addEventListener("click", ()=>showPublic("home"));
-    btnBackHomeFromLogin.addEventListener("click", ()=>showOnly("home"));
+    $("btnGoPublic").addEventListener("click", goPublic);
+    $("btnGoBusiness").addEventListener("click", goBusiness);
+    $("btnBackHome1").addEventListener("click", goHome);
+    $("btnBackHome2").addEventListener("click", goHome);
 
-    btnPublicFromLogin.addEventListener("click", ()=>showPublic("login"));
-    btnPublicFromPanel.addEventListener("click", ()=>showPublic("panel"));
-    btnPublicFromPublish.addEventListener("click", ()=>showPublic("publish"));
+    // ---- Business panel show/hide (NO TODO SEGUIDO)
+    const secAccess  = $("secAccess");
+    const secProfile = $("secProfile");
+    const secPublish = $("secPublish");
+    const secMine    = $("secMine");
 
-    loginForm.addEventListener("submit", function(e){
-      e.preventDefault();
-      const u = (userInput.value || "").trim().toLowerCase();
-      const p = (passInput.value || "").trim();
+    const navPublish = $("navPublish");
+    const navMine    = $("navMine");
+    const navProfile = $("navProfile");
+    const navAccess  = $("navAccess");
 
-      if(!u || !p){
-        showMsg("err", "Completa usuario y contraseña.");
-        return;
+    function setNavActive(activeBtn){
+      [navPublish, navMine, navProfile, navAccess].forEach(b=>{
+        b.classList.remove("primary");
+      });
+      activeBtn.classList.add("primary");
+    }
+
+    function showBiz(which){
+      // oculta todo
+      hide(secAccess); hide(secProfile); hide(secPublish); hide(secMine);
+
+      // reglas: si no hay sesión, todo lo que NO sea access -> manda a access
+      if(!currentUser && which !== "access"){
+        which = "access";
       }
-      if(USERS[u] && USERS[u] === p){
-        localStorage.setItem("cc_user", u);
-        showMsg("ok", "✅ Login correcto. Entrando...");
-        setTimeout(showPanel, 300);
-      } else {
-        showMsg("err", "❌ Usuario o contraseña incorrectos.");
-      }
-    });
 
-    btnDemo.addEventListener("click", function(){
-      userInput.value = "admin";
-      passInput.value = "1234";
-      clearMsg();
-      passInput.focus();
-    });
-
-    function logout(){
-      localStorage.removeItem("cc_user");
-      showOnly("home");
-      showMsg("ok", "Sesión cerrada.");
-    }
-    btnLogout.addEventListener("click", logout);
-    btnLogout2.addEventListener("click", logout);
-
-    btnClear.addEventListener("click", function(){
-      localStorage.clear();
-      showOnly("home");
-      showMsg("ok", "Datos locales borrados.");
-    });
-
-    btnNext.addEventListener("click", showPublish);
-    btnBackToLogin.addEventListener("click", showLogin);
-    btnBackPanel.addEventListener("click", showPanel);
-
-    // =========================
-    // OFERTAS (PUBLICAR + LISTAR)
-    // =========================
-    const offerForm = document.getElementById("offerForm");
-    const offerMsg = document.getElementById("offerMsg");
-
-    const oTitle = document.getElementById("oTitle");
-    const oPrice = document.getElementById("oPrice");
-    const oCurrency = document.getElementById("oCurrency");
-    const oDesc = document.getElementById("oDesc");
-    const oPhone = document.getElementById("oPhone");
-    const oWhats = document.getElementById("oWhats");
-    const oPhoto = document.getElementById("oPhoto");
-
-    const imgHint = document.getElementById("imgHint");
-    const imgPreview = document.getElementById("imgPreview");
-
-    const pvTitle = document.getElementById("pvTitle");
-    const pvPrice = document.getElementById("pvPrice");
-    const pvCurrency = document.getElementById("pvCurrency");
-    const pvDesc = document.getElementById("pvDesc");
-    const pvPhone = document.getElementById("pvPhone");
-    const pvWhats = document.getElementById("pvWhats");
-
-    const offersList = document.getElementById("offersList");
-    const offersEmpty = document.getElementById("offersEmpty");
-
-    const btnClearForm = document.getElementById("btnClearForm");
-    const btnDeleteAll = document.getElementById("btnDeleteAll");
-    const btnExport = document.getElementById("btnExport");
-
-    function showOfferMsg(type, text){
-      offerMsg.className = "alert " + (type === "ok" ? "ok" : "err");
-      offerMsg.textContent = text;
-    }
-    function clearOfferMsg(){
-      offerMsg.className = "alert";
-      offerMsg.textContent = "";
+      if(which==="publish"){ show(secPublish); setNavActive(navPublish); }
+      if(which==="mine"){ show(secMine); setNavActive(navMine); }
+      if(which==="profile"){ show(secProfile); setNavActive(navProfile); }
+      if(which==="access"){ show(secAccess); setNavActive(navAccess); }
     }
 
-    function resetPreview(){
-      imgHint.style.display = "block";
-      imgPreview.style.display = "none";
-      imgPreview.src = "";
+    navPublish.addEventListener("click", ()=>showBiz("publish"));
+    navMine.addEventListener("click", ()=>showBiz("mine"));
+    navProfile.addEventListener("click", ()=>showBiz("profile"));
+    navAccess.addEventListener("click", ()=>showBiz("access"));
 
-      pvTitle.textContent = "Título…";
-      pvPrice.textContent = "Precio…";
-      pvCurrency.textContent = "";
-      pvDesc.textContent = "Descripción…";
-      pvPhone.textContent = "Teléfono…";
-      pvWhats.textContent = "WhatsApp…";
+    // ---- Firebase init
+    let app, auth, db;
+    let recaptcha;
+    let phoneConfirmation = null;
+
+    try{
+      app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getDatabase(app);
+      fbStatus.className = "status ok";
+      fbStatus.textContent = "Estado Firebase: ✅ CONECTADO";
+    }catch(e){
+      fbStatus.className = "status bad";
+      fbStatus.textContent = "Estado Firebase: ❌ ERROR (revisa firebaseConfig)";
+      console.error(e);
     }
 
-    function updatePreview(){
-      pvTitle.textContent = (oTitle.value || "Título…").trim() || "Título…";
-      pvPrice.textContent = (oPrice.value || "Precio…").trim() || "Precio…";
-      pvCurrency.textContent = (oCurrency.value || "").trim() ? (" " + oCurrency.value.trim()) : "";
-      pvDesc.textContent = (oDesc.value || "Descripción…").trim() || "Descripción…";
-      pvPhone.textContent = (oPhone.value || "Teléfono…").trim() || "Teléfono…";
-      pvWhats.textContent = (oWhats.value || "WhatsApp…").trim() || "WhatsApp…";
+    // ---- Auth state
+    let currentUser = null;
+    let currentProfile = null;
+    let editingId = null;
+    let mineUnsub = null;
+
+    function setSessionUI(user){
+      currentUser = user || null;
+      $("sessTxt").textContent = user ? "Sí" : "No";
+      $("uidTxt").textContent = user ? user.uid : "—";
     }
 
-    ["input","change"].forEach(ev=>{
-      oTitle.addEventListener(ev, updatePreview);
-      oPrice.addEventListener(ev, updatePreview);
-      oCurrency.addEventListener(ev, updatePreview);
-      oDesc.addEventListener(ev, updatePreview);
-      oPhone.addEventListener(ev, updatePreview);
-      oWhats.addEventListener(ev, updatePreview);
-    });
-
-    let selectedPhotoBase64 = "";
-
-    oPhoto.addEventListener("change", function(){
-      const file = oPhoto.files && oPhoto.files[0];
-      if(!file){
-        selectedPhotoBase64 = "";
-        imgHint.style.display = "block";
-        imgPreview.style.display = "none";
-        imgPreview.src = "";
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = function(e){
-        selectedPhotoBase64 = String(e.target.result || "");
-        imgHint.style.display = "none";
-        imgPreview.style.display = "block";
-        imgPreview.src = selectedPhotoBase64;
-      };
-      reader.readAsDataURL(file);
-    });
-
-    function renderOffers(){
-      const list = getOffers();
-      offersList.innerHTML = "";
-
-      if(!list.length){
-        offersEmpty.style.display = "block";
-        return;
-      }
-      offersEmpty.style.display = "none";
-
-      list
-        .slice()
-        .sort((a,b)=> (b.createdAt||0) - (a.createdAt||0))
-        .forEach(offer => {
-          const card = document.createElement("div");
-          card.className = "offer";
-
-          const pic = document.createElement("div");
-          pic.className = "pic";
-          const img = document.createElement("img");
-          img.alt = "Oferta";
-          img.src = offer.photo || placeholderImg();
-          pic.appendChild(img);
-
-          const body = document.createElement("div");
-          body.className = "body";
-
-          const t = document.createElement("p");
-          t.className = "title";
-          t.textContent = offer.title || "Oferta";
-
-          const meta = document.createElement("p");
-          meta.className = "meta";
-          const money = fmtMoney(offer.price, offer.currency);
-          const desc = (offer.desc || "").trim();
-          const phone = (offer.phone || "").trim();
-          const whats = (offer.whats || "").trim();
-          const who = (offer.user || "").trim();
-
-          meta.innerHTML = `
-            <span class="chip">💲 ${escapeHtml(money || "—")}</span>
-            <span class="chip">👤 ${escapeHtml(who || "—")}</span>
-            <div style="height:8px"></div>
-            <div>${escapeHtml(desc || "Sin descripción.")}</div>
-            <div style="height:8px"></div>
-            <div>📞 ${escapeHtml(phone || "—")} &nbsp; | &nbsp; 💬 ${escapeHtml(whats || "—")}</div>
-          `;
-
-          const actions = document.createElement("div");
-          actions.className = "actions";
-
-          const copy = document.createElement("button");
-          copy.className = "btn secondary";
-          copy.type = "button";
-          copy.textContent = "Copiar info";
-          copy.addEventListener("click", function(){
-            const text =
-              `Oferta: ${offer.title}\n` +
-              `Precio: ${money}\n` +
-              `Descripción: ${desc}\n` +
-              `Teléfono: ${phone}\n` +
-              `WhatsApp: ${whats}\n` +
-              `Publicado por: ${who}\n`;
-            copyToClipboard(text,
-              ()=> { showOfferMsg("ok","Copiado ✅"); setTimeout(clearOfferMsg, 900); },
-              ()=> { showOfferMsg("err","No se pudo copiar."); setTimeout(clearOfferMsg, 900); }
-            );
-          });
-
-          const del = document.createElement("button");
-          del.className = "btn danger";
-          del.type = "button";
-          del.textContent = "Borrar";
-          del.addEventListener("click", function(){
-            const list2 = getOffers().filter(o => o.id !== offer.id);
-            setOffers(list2);
-            renderOffers();
-            showOfferMsg("ok","Oferta borrada.");
-            setTimeout(clearOfferMsg, 900);
-          });
-
-          actions.appendChild(copy);
-          actions.appendChild(del);
-
-          body.appendChild(t);
-          body.appendChild(meta);
-          body.appendChild(actions);
-
-          card.appendChild(pic);
-          card.appendChild(body);
-
-          offersList.appendChild(card);
+    async function ensureBusinessProfile(user){
+      if(!user) return;
+      const uref = ref(db, "users/" + user.uid);
+      const snap = await get(uref);
+      if(!snap.exists()){
+        await set(uref, {
+          role: "business",
+          createdAt: Date.now(),
+          bizName: "",
+          phone: "",
+          whatsapp: ""
         });
+      }
+      const snap2 = await get(uref);
+      currentProfile = snap2.val() || null;
+
+      $("bizName").value = currentProfile?.bizName || "";
+      $("bizPhone").value = currentProfile?.phone || "";
+      $("bizWa").value = currentProfile?.whatsapp || "";
     }
 
-    offerForm.addEventListener("submit", function(e){
-      e.preventDefault();
-      clearOfferMsg();
+    onAuthStateChanged(auth, async (user)=>{
+      setSessionUI(user);
 
-      const u = currentUser();
-      if(!u){
-        showOfferMsg("err","No hay sesión. Vuelve al login.");
-        showLogin();
-        return;
+      if(user){
+        await ensureBusinessProfile(user);
+        attachMineListener(); // una sola vez
+        // si estás en Negocio, manda al panel publicar
+        if(!viewBusiness.classList.contains("hide")) showBiz("publish");
+      }else{
+        currentProfile = null;
+        $("mineList").innerHTML = "";
+        if(mineUnsub){ mineUnsub(); mineUnsub = null; }
+        if(!viewBusiness.classList.contains("hide")) showBiz("access");
       }
+    });
 
-      const title = (oTitle.value || "").trim();
-      const price = (oPrice.value || "").trim();
-      const currency = (oCurrency.value || "").trim();
-      const desc = (oDesc.value || "").trim();
-      const phone = (oPhone.value || "").trim();
-      const whats = (oWhats.value || "").trim();
+    // ---- Tabs correo/teléfono
+    $("tabEmail").addEventListener("click", ()=>{
+      $("tabEmail").classList.remove("secondary");
+      $("tabPhone").classList.add("secondary");
+      show($("panelEmail")); hide($("panelPhone"));
+    });
+    $("tabPhone").addEventListener("click", ()=>{
+      $("tabPhone").classList.remove("secondary");
+      $("tabEmail").classList.add("secondary");
+      hide($("panelEmail")); show($("panelPhone"));
+      setupRecaptcha();
+    });
 
-      if(!title){
-        showOfferMsg("err","El título es obligatorio.");
-        oTitle.focus();
-        return;
+    function setupRecaptcha(){
+      if(recaptcha) return;
+      try{
+        recaptcha = new RecaptchaVerifier(auth, "recaptcha-container", { size:"normal" });
+      }catch(e){
+        console.error(e);
       }
-      if(price === "" || Number(price) < 0){
-        showOfferMsg("err","El precio es obligatorio y debe ser válido.");
-        oPrice.focus();
-        return;
-      }
+    }
 
-      const offer = {
-        id: "of_" + Date.now() + "_" + Math.random().toString(16).slice(2),
-        user: u,
-        title,
-        price,
-        currency,
-        desc,
-        phone,
-        whats,
-        photo: selectedPhotoBase64 || "",
+    // ---- Email auth
+    $("btnEmailRegister").addEventListener("click", async ()=>{
+      const email = $("email").value.trim();
+      const pass = $("pass").value.trim();
+      if(!email || !pass) return toast("Pon correo y contraseña.");
+      try{
+        const cred = await createUserWithEmailAndPassword(auth, email, pass);
+        await ensureBusinessProfile(cred.user);
+        toast("Cuenta creada. Ya puedes publicar ✅");
+        showBiz("publish");
+      }catch(e){
+        console.error(e);
+        toast("Error: " + (e?.message || e));
+      }
+    });
+
+    $("btnEmailLogin").addEventListener("click", async ()=>{
+      const email = $("email").value.trim();
+      const pass = $("pass").value.trim();
+      if(!email || !pass) return toast("Pon correo y contraseña.");
+      try{
+        const cred = await signInWithEmailAndPassword(auth, email, pass);
+        await ensureBusinessProfile(cred.user);
+        toast("Sesión iniciada ✅");
+        showBiz("publish");
+      }catch(e){
+        console.error(e);
+        toast("Error: " + (e?.message || e));
+      }
+    });
+
+    // ---- Phone auth
+    $("btnSendCode").addEventListener("click", async ()=>{
+      const phone = $("phone").value.trim();
+      if(!phone) return toast("Pon tu teléfono con código país. Ej: +53...");
+      try{
+        setupRecaptcha();
+        phoneConfirmation = await signInWithPhoneNumber(auth, phone, recaptcha);
+        toast("Código enviado. Revisa SMS ✅");
+      }catch(e){
+        console.error(e);
+        toast("Error enviando SMS: " + (e?.message || e));
+      }
+    });
+
+    $("btnVerifyCode").addEventListener("click", async ()=>{
+      const otp = $("otp").value.trim();
+      if(!phoneConfirmation) return toast("Primero toca 'Enviar código SMS'.");
+      if(!otp) return toast("Escribe el código (OTP).");
+      try{
+        const cred = await phoneConfirmation.confirm(otp);
+        await ensureBusinessProfile(cred.user);
+        toast("Entraste con teléfono ✅");
+        showBiz("publish");
+      }catch(e){
+        console.error(e);
+        toast("Código incorrecto o expirado: " + (e?.message || e));
+      }
+    });
+
+    // ---- Logout
+    $("btnLogout").addEventListener("click", async ()=>{
+      try{ await signOut(auth); toast("Saliste."); }catch(e){ console.error(e); }
+    });
+
+    // ---- Perfil negocio
+    $("btnSaveProfile").addEventListener("click", async ()=>{
+      if(!currentUser) return toast("Primero inicia sesión.");
+      try{
+        const uref = ref(db, "users/" + currentUser.uid);
+        await update(uref, {
+          bizName: $("bizName").value.trim(),
+          phone: $("bizPhone").value.trim(),
+          whatsapp: $("bizWa").value.trim(),
+          updatedAt: Date.now()
+        });
+        await ensureBusinessProfile(currentUser);
+        toast("Perfil guardado ✅");
+      }catch(e){
+        console.error(e);
+        toast("Error guardando perfil: " + (e?.message || e));
+      }
+    });
+
+    // ---- Foto -> base64
+    function fileToBase64(file){
+      return new Promise((resolve,reject)=>{
+        const r = new FileReader();
+        r.onload = ()=>resolve(r.result);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
+
+    // ---- Publicar / editar
+    $("btnPublish").addEventListener("click", async ()=>{
+      if(!currentUser) return toast("Primero inicia sesión (correo o teléfono).");
+      await ensureBusinessProfile(currentUser);
+
+      const data = {
+        ownerUid: currentUser.uid,
+        bizName: ($("bizName").value.trim() || "Negocio"),
+        categoria: $("categoria").value,
+        title: $("title").value.trim(),
+        price: $("price").value.trim(),
+        currency: $("currency").value.trim(),
+        desc: $("desc").value.trim(),
+        phone: $("bizPhone").value.trim(),
+        whatsapp: $("bizWa").value.trim(),
         createdAt: Date.now()
       };
 
-      const list = getOffers();
-      list.push(offer);
-      setOffers(list);
+      if(!data.title) return toast("Pon un título.");
+      if(!data.price) return toast("Pon un precio (obligatorio).");
+      if(!data.currency) data.currency = "CUP";
 
-      showOfferMsg("ok","✅ Oferta guardada.");
-      selectedPhotoBase64 = "";
-      offerForm.reset();
-      resetPreview();
-      updatePreview();
-      renderOffers();
-    });
-
-    btnClearForm.addEventListener("click", function(){
-      selectedPhotoBase64 = "";
-      offerForm.reset();
-      resetPreview();
-      updatePreview();
-      clearOfferMsg();
-      oTitle.focus();
-    });
-
-    btnDeleteAll.addEventListener("click", function(){
-      const ok = confirm("¿Seguro que quieres borrar TODAS las ofertas?");
-      if(!ok) return;
-      setOffers([]);
-      renderOffers();
-      showOfferMsg("ok","Todas las ofertas fueron borradas.");
-      setTimeout(clearOfferMsg, 900);
-    });
-
-    btnExport.addEventListener("click", function(){
-      const list = getOffers();
-      if(!list.length){
-        showOfferMsg("err","No hay ofertas para exportar.");
-        return;
+      const f = $("photo").files?.[0] || null;
+      if(f){
+        try{ data.photo = await fileToBase64(f); }catch(e){ console.error(e); }
       }
-      const json = JSON.stringify(list, null, 2);
-      copyToClipboard(json,
-        ()=> { showOfferMsg("ok","Exportado (copiado) ✅"); setTimeout(clearOfferMsg, 900); },
-        ()=> { showOfferMsg("err","No se pudo copiar."); setTimeout(clearOfferMsg, 900); }
-      );
-    });
 
-    // =========================
-    // PÚBLICO (CLIENTES)
-    // =========================
-    const publicList = document.getElementById("publicList");
-    const publicEmpty = document.getElementById("publicEmpty");
-    const publicCount = document.getElementById("publicCount");
-
-    const fSearch = document.getElementById("fSearch");
-    const fCurrency = document.getElementById("fCurrency");
-    const fOrder = document.getElementById("fOrder");
-
-    const btnPublicRefresh = document.getElementById("btnPublicRefresh");
-    const btnPublicBack = document.getElementById("btnPublicBack");
-    const btnPublicLogin = document.getElementById("btnPublicLogin");
-    const btnPublicClear = document.getElementById("btnPublicClear");
-    const btnPublicShareApp = document.getElementById("btnPublicShareApp");
-
-    btnPublicBack.addEventListener("click", function(){
-      const back = lastScreen();
-      if(back === "panel" && currentUser()) showPanel();
-      else if(back === "publish" && currentUser()) showPublish();
-      else if(back === "login") showLogin();
-      else showOnly("home");
-    });
-
-    btnPublicLogin.addEventListener("click", showLogin);
-    btnPublicRefresh.addEventListener("click", renderPublic);
-
-    btnPublicClear.addEventListener("click", function(){
-      fSearch.value = "";
-      fCurrency.value = "";
-      fOrder.value = "new";
-      renderPublic();
-    });
-
-    fSearch.addEventListener("input", renderPublic);
-    fCurrency.addEventListener("input", renderPublic);
-    fOrder.addEventListener("change", renderPublic);
-
-    btnPublicShareApp.addEventListener("click", async function(){
-      const text =
-        "Chambas Conecta (modo local):\n" +
-        "Ofertas guardadas en este teléfono.\n" +
-        "Luego lo conectamos a internet para que sea público para todos.\n";
-      const ok = await shareText("Chambas Conecta", text);
-      if(!ok){
-        copyToClipboard(text, ()=>alert("Texto copiado ✅"), ()=>alert(text));
+      try{
+        if(editingId){
+          await update(ref(db, "publicaciones/" + editingId), data);
+          toast("Oferta actualizada ✅");
+        }else{
+          const newRef = push(ref(db, "publicaciones"));
+          await set(newRef, data);
+          toast("Oferta publicada ✅");
+        }
+        clearForm();
+        await renderPublic();
+        showBiz("mine"); // después de publicar, muéstrale sus ofertas
+      }catch(e){
+        console.error(e);
+        toast("Error publicando: " + (e?.message || e));
       }
     });
 
-    function buildOfferShareText(offer){
-      const money = fmtMoney(offer.price, offer.currency);
-      const phone = (offer.phone||"").trim();
-      const whats = (offer.whats||"").trim();
-      const desc = (offer.desc||"").trim();
-      return (
-        `📣 Oferta en Chambas:\n`+
-        `Producto: ${offer.title}\n`+
-        `Precio: ${money}\n`+
-        (desc ? `Descripción: ${desc}\n` : "")+
-        (phone ? `📞 Tel: ${phone}\n` : "")+
-        (whats ? `💬 WhatsApp: ${whats}\n` : "")
-      );
+    function clearForm(){
+      editingId = null;
+      $("title").value = "";
+      $("price").value = "";
+      $("currency").value = "CUP";
+      $("desc").value = "";
+      $("photo").value = "";
     }
+    $("btnClear").addEventListener("click", clearForm);
 
-    function renderPublic(){
-      const list0 = getOffers();
+    $("btnCancelEdit").addEventListener("click", ()=>{
+      clearForm();
+      toast("Edición cancelada.");
+    });
 
-      const q = (fSearch.value || "").trim().toLowerCase();
-      const cur = (fCurrency.value || "").trim().toLowerCase();
-      const order = fOrder.value;
+    // ---- Render público
+    function offerCard(item, id, mine=false){
+      const div = document.createElement("div");
+      div.className = "offer";
 
-      let list = list0.slice();
+      const imgHtml = item.photo
+        ? `<img src="${item.photo}" alt="Oferta">`
+        : `<div class="imgph">SIN FOTO</div>`;
 
-      if(q){
-        list = list.filter(o =>
-          String(o.title||"").toLowerCase().includes(q) ||
-          String(o.desc||"").toLowerCase().includes(q) ||
-          String(o.user||"").toLowerCase().includes(q)
-        );
-      }
-      if(cur){
-        list = list.filter(o => String(o.currency||"").trim().toLowerCase() === cur);
-      }
+      div.innerHTML = `
+        ${imgHtml}
+        <div class="p">
+          <h3>${escapeHtml(item.title || "")}</h3>
+          <div class="meta">
+            <span class="tag">🏷️ ${escapeHtml(item.categoria||"")}</span>
+            <span class="tag"><strong>$</strong> ${escapeHtml(String(item.price||""))} ${escapeHtml(item.currency||"")}</span>
+            <span class="tag">🏪 ${escapeHtml(item.bizName||"")}</span>
+          </div>
+          <div class="muted" style="margin-bottom:10px">${escapeHtml(item.desc||"")}</div>
+          <div class="row" style="gap:10px; margin-bottom:10px;">
+            ${item.phone ? `<a class="btn secondary" style="text-decoration:none;text-align:center" href="tel:${encodeURIComponent(item.phone)}">📞 Llamar</a>` : ``}
+            ${item.whatsapp ? `<a class="btn secondary" style="text-decoration:none;text-align:center" href="https://wa.me/${encodeURIComponent((item.whatsapp||"").replace(/[^0-9]/g,''))}" target="_blank">💬 WhatsApp</a>` : ``}
+          </div>
+          ${mine ? `
+          <div class="actions">
+            <button class="btn" data-act="copy">Copiar info</button>
+            <button class="btn secondary" data-act="edit">Editar</button>
+            <button class="btn danger" data-act="del">Borrar</button>
+          </div>` : ``}
+        </div>
+      `;
 
-      list.sort((a,b)=>{
-        const da = a.createdAt||0, db = b.createdAt||0;
-        return order === "old" ? (da - db) : (db - da);
-      });
-
-      publicList.innerHTML = "";
-      publicCount.textContent = `${list.length} oferta(s)`;
-
-      if(!list.length){
-        publicEmpty.style.display = "block";
-        return;
-      }
-      publicEmpty.style.display = "none";
-
-      list.forEach(offer=>{
-        const card = document.createElement("div");
-        card.className = "offer";
-
-        const pic = document.createElement("div");
-        pic.className = "pic";
-        const img = document.createElement("img");
-        img.alt = "Oferta";
-        img.src = offer.photo || placeholderImg();
-        pic.appendChild(img);
-
-        const body = document.createElement("div");
-        body.className = "body";
-
-        const t = document.createElement("p");
-        t.className = "title";
-        t.textContent = offer.title || "Oferta";
-
-        const money = fmtMoney(offer.price, offer.currency);
-        const desc = (offer.desc||"").trim();
-        const phone = normalizePhone(offer.phone);
-        const whats = normalizePhone(offer.whats);
-
-        const meta = document.createElement("p");
-        meta.className = "meta";
-        meta.innerHTML = `
-          <span class="chip">💲 ${escapeHtml(money || "—")}</span>
-          <span class="chip">👤 ${escapeHtml(offer.user || "—")}</span>
-          <div style="height:8px"></div>
-          <div>${escapeHtml(desc || "Sin descripción.")}</div>
-        `;
-
-        const actions = document.createElement("div");
-        actions.className = "actions";
-
-        if(phone){
-          const aCall = document.createElement("a");
-          aCall.className = "btn ok";
-          aCall.href = `tel:${phone}`;
-          aCall.textContent = "📞 Llamar";
-          actions.appendChild(aCall);
-        }
-
-        if(whats){
-          const aW = document.createElement("a");
-          aW.className = "btn ok";
-          aW.href = `https://wa.me/${whats.replace(/^\+/, "")}`;
-          aW.target = "_blank";
-          aW.rel = "noopener";
-          aW.textContent = "💬 WhatsApp";
-          actions.appendChild(aW);
-        }
-
-        const btnShare = document.createElement("button");
-        btnShare.className = "btn secondary";
-        btnShare.type = "button";
-        btnShare.textContent = "Compartir";
-        btnShare.addEventListener("click", async ()=>{
-          const text = buildOfferShareText(offer);
-          const ok = await shareText("Oferta", text);
-          if(!ok){
-            copyToClipboard(text, ()=>alert("Copiado ✅"), ()=>alert(text));
-          }
+      if(mine){
+        div.querySelector('[data-act="copy"]').addEventListener("click", ()=>{
+          const txt = JSON.stringify(item, null, 2);
+          copyToClipboard(txt, ()=>toast("Copiado ✅"), ()=>toast("Copia manual abierta."));
         });
-        actions.appendChild(btnShare);
-
-        body.appendChild(t);
-        body.appendChild(meta);
-        body.appendChild(actions);
-
-        card.appendChild(pic);
-        card.appendChild(body);
-        publicList.appendChild(card);
-      });
+        div.querySelector('[data-act="edit"]').addEventListener("click", ()=>{
+          loadToForm(item, id);
+          showBiz("publish");
+        });
+        div.querySelector('[data-act="del"]').addEventListener("click", ()=>delOffer(id));
+      }
+      return div;
     }
 
-    // =========================
-    // INIT
-    // =========================
-    resetPreview();
-    updatePreview();
-
-    // Si ya hay sesión, opcional: puedes ir directo a panel.
-    // Por ahora abrimos HOME siempre para que sea más claro.
-    showOnly("home");
-  </script>
-
-  <!-- ✅ Service Worker (PWA) -->
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw.js");
-      });
+    function escapeHtml(s){
+      return (s||"").replace(/[&<>"']/g, (m)=>({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      }[m]));
     }
+
+    async function renderPublic(){
+      const list = $("publicList");
+      list.innerHTML = `<div class="muted">Cargando…</div>`;
+      try{
+        const snap = await get(ref(db,"publicaciones"));
+        const obj = snap.val() || {};
+        const arr = Object.entries(obj).map(([id,v])=>({id, ...v}));
+
+        const qtxt = ($("searchPublic").value||"").trim().toLowerCase();
+        const filtered = qtxt
+          ? arr.filter(o =>
+              (o.title||"").toLowerCase().includes(qtxt) ||
+              (o.desc||"").toLowerCase().includes(qtxt) ||
+              (o.bizName||"").toLowerCase().includes(qtxt)
+            )
+          : arr;
+
+        list.innerHTML = "";
+        if(!filtered.length){
+          list.innerHTML = `<div class="muted">No hay ofertas todavía.</div>`;
+          return;
+        }
+        filtered
+          .sort((a,b)=> (b.createdAt||0)-(a.createdAt||0))
+          .forEach(item=>{
+            list.appendChild(offerCard(item, item.id, false));
+          });
+      }catch(e){
+        console.error(e);
+        list.innerHTML = `<div class="muted">Error cargando publicaciones.</div>`;
+      }
+    }
+
+    $("searchPublic").addEventListener("input", ()=>{
+      if(!viewPublic.classList.contains("hide")) renderPublic();
+    });
+
+    // ---- Mis ofertas (listener único)
+    $("btnRefreshMine").addEventListener("click", ()=>attachMineListener(true));
+
+    function attachMineListener(forceOnce=false){
+      const list = $("mineList");
+
+      if(!currentUser){
+        list.innerHTML = `<div class="muted">Inicia sesión para ver tus ofertas.</div>`;
+        return;
+      }
+
+      // si ya hay listener y no forzamos, no duplicar
+      if(mineUnsub && !forceOnce) return;
+
+      // si forzamos, resetea listener
+      if(mineUnsub){ mineUnsub(); mineUnsub = null; }
+
+      list.innerHTML = `<div class="muted">Cargando…</div>`;
+      try{
+        const q = query(ref(db,"publicaciones"), orderByChild("ownerUid"), equalTo(currentUser.uid));
+        mineUnsub = onValue(q, (snap)=>{
+          const obj = snap.val() || {};
+          const arr = Object.entries(obj).map(([id,v])=>({id, ...v}));
+          list.innerHTML = "";
+          if(!arr.length){
+            list.innerHTML = `<div class="muted">No hay ofertas guardadas.</div>`;
+            return;
+          }
+          arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).forEach(item=>{
+            list.appendChild(offerCard(item, item.id, true));
+          });
+        });
+      }catch(e){
+        console.error(e);
+        list.innerHTML = `<div class="muted">Error cargando tus ofertas.</div>`;
+      }
+    }
+
+    function loadToForm(item, id){
+      editingId = id;
+      $("categoria").value = item.categoria || "Restaurantes";
+      $("title").value = item.title || "";
+      $("price").value = item.price || "";
+      $("currency").value = item.currency || "CUP";
+      $("desc").value = item.desc || "";
+      toast("Editando: " + (item.title||""));
+    }
+
+    async function delOffer(id){
+      if(!currentUser) return toast("Inicia sesión.");
+      if(!confirm("¿Seguro que quieres borrar esta oferta?")) return;
+      try{
+        await remove(ref(db, "publicaciones/" + id));
+        toast("Borrada ✅");
+      }catch(e){
+        console.error(e);
+        toast("Error borrando: " + (e?.message || e));
+      }
+    }
+
+    // ---- Exportar / importar (de MIS ofertas)
+    function download(filename, text){
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([text], {type:"application/json"}));
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    $("btnExportFile").addEventListener("click", async ()=>{
+      if(!currentUser) return toast("Inicia sesión.");
+      const snap = await get(query(ref(db,"publicaciones"), orderByChild("ownerUid"), equalTo(currentUser.uid)));
+      const obj = snap.val() || {};
+      const arr = Object.values(obj);
+      const json = JSON.stringify(arr, null, 2);
+      download("chambasconecta_mis_ofertas.json", json);
+      toast("Archivo exportado ✅");
+    });
+
+    $("btnExportCopy").addEventListener("click", async ()=>{
+      if(!currentUser) return toast("Inicia sesión.");
+      const snap = await get(query(ref(db,"publicaciones"), orderByChild("ownerUid"), equalTo(currentUser.uid)));
+      const obj = snap.val() || {};
+      const arr = Object.values(obj);
+      const json = JSON.stringify(arr, null, 2);
+      copyToClipboard(json, ()=>toast("Copiado ✅"), ()=>toast("Copia manual abierta."));
+    });
+
+    // Modal importar
+    const importModal = $("importModal");
+    $("btnImportOpen").addEventListener("click", ()=>{
+      if(!currentUser) return toast("Inicia sesión.");
+      importModal.style.display = "flex";
+      $("importText").value = "";
+    });
+    $("btnImportClose").addEventListener("click", ()=>importModal.style.display="none");
+    importModal.addEventListener("click",(e)=>{ if(e.target===importModal) importModal.style.display="none"; });
+
+    $("btnImportDo").addEventListener("click", async ()=>{
+      if(!currentUser) return toast("Inicia sesión.");
+      let arr;
+      try{
+        arr = JSON.parse($("importText").value.trim());
+        if(!Array.isArray(arr)) throw new Error("JSON debe ser una lista []");
+      }catch(e){
+        return toast("JSON inválido: " + (e?.message || e));
+      }
+      try{
+        for(const item of arr){
+          const newRef = push(ref(db,"publicaciones"));
+          await set(newRef, {
+            ownerUid: currentUser.uid,
+            bizName: $("bizName").value.trim() || item.bizName || "Negocio",
+            categoria: item.categoria || "Otros",
+            title: item.title || "",
+            price: item.price || "",
+            currency: item.currency || "CUP",
+            desc: item.desc || "",
+            phone: $("bizPhone").value.trim() || item.phone || "",
+            whatsapp: $("bizWa").value.trim() || item.whatsapp || "",
+            photo: item.photo || "",
+            createdAt: Date.now()
+          });
+        }
+        importModal.style.display="none";
+        toast("Importado ✅");
+        showBiz("mine");
+      }catch(e){
+        console.error(e);
+        toast("Error importando: " + (e?.message || e));
+      }
+    });
+
+    // === COPIAR (con plan B manual) ===
+    var copyModal = document.getElementById("copyModal");
+    var copyText = document.getElementById("copyText");
+    var btnSelectAll = document.getElementById("btnSelectAll");
+    var btnCopyClose = document.getElementById("btnCopyClose");
+
+    function openCopyModal(text){
+      copyText.value = text;
+      copyModal.style.display = "flex";
+      setTimeout(function(){
+        copyText.focus();
+        copyText.select();
+      }, 50);
+    }
+    function closeCopyModal(){ copyModal.style.display = "none"; }
+
+    btnCopyClose && btnCopyClose.addEventListener("click", closeCopyModal);
+    copyModal && copyModal.addEventListener("click", function(e){
+      if(e.target === copyModal) closeCopyModal();
+    });
+    btnSelectAll && btnSelectAll.addEventListener("click", function(){
+      copyText.focus(); copyText.select();
+    });
+
+    function copyToClipboard(text, okCb, errCb){
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function(){
+          okCb && okCb();
+        }).catch(function(){
+          openCopyModal(text);
+          errCb && errCb();
+        });
+        return;
+      }
+      try{
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        ta.style.top = "0";
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        var ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+
+        if(ok){
+          okCb && okCb();
+        }else{
+          openCopyModal(text);
+          errCb && errCb();
+        }
+      }catch(e){
+        openCopyModal(text);
+        errCb && errCb();
+      }
+    }
+
+    // Default view
+    goHome();
   </script>
 </body>
-  </html>
+</html>
