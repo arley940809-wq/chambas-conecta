@@ -149,7 +149,7 @@
       border-radius:16px;
       padding:12px;
     }
-#fbStatus{ display:none !important; }
+    #fbStatus{ display:none !important; }
   </style>
 </head>
 <body>
@@ -446,7 +446,6 @@
       RecaptchaVerifier,
       signInWithPhoneNumber
     } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-    // ✅ OJO: importamos también "child" para reglas y usos futuros (no rompe nada)
     import {
       getDatabase,
       ref,
@@ -471,30 +470,11 @@
       messagingSenderId: "342153426332",
       appId: "1:342153426332:web:aa5534dd8304186da00459"
     };
-// 🚀 Inicializar Firebase
-const app = initializeApp(firebaseConfig);
 
-// 🔐 Inicializar Auth
-const auth = getAuth(app);
-
-// 🔐 reCAPTCHA obligatorio para login por teléfono
-window.recaptchaVerifier = new RecaptchaVerifier(
-  "recaptcha-container",
-  {
-    size: "normal",
-    callback: () => {
-      console.log("reCAPTCHA verificado");
-    },
-    "expired-callback": () => {
-      alert("El reCAPTCHA expiró, recarga la página");
-    }
-  },
-  auth
-);
-
-recaptchaVerifier.render().then((widgetId) => {
-  window.recaptchaWidgetId = widgetId;
-});
+    // ✅ UNA sola inicialización (esto era lo que te rompía todo)
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
 
     // ---- UI helpers
     const $ = (id)=>document.getElementById(id);
@@ -553,7 +533,6 @@ recaptchaVerifier.render().then((widgetId) => {
         which = "access";
       }
 
-      // admin solo si isAdmin
       if(which === "admin" && !isAdmin){
         which = "publish";
       }
@@ -571,21 +550,23 @@ recaptchaVerifier.render().then((widgetId) => {
     navAccess.addEventListener("click", ()=>showBiz("access"));
     navAdmin.addEventListener("click", ()=>showBiz("admin"));
 
-    // ---- Firebase init
-    let app, auth, db;
-    let recaptcha;
+    // ---- reCAPTCHA (✅ solo 1 forma correcta)
+    let recaptchaVerifier = null;
     let phoneConfirmation = null;
 
-    try{
-      app = initializeApp(firebaseConfig);
-      auth = getAuth(app);
-      db = getDatabase(app);
-      fbStatus.className = "status ok";
-      fbStatus.textContent = "Estado Firebase: ✅ CONECTADO";
-    }catch(e){
-      fbStatus.className = "status bad";
-      fbStatus.textContent = "Estado Firebase: ❌ ERROR (revisa firebaseConfig)";
-      console.error(e);
+    function setupRecaptcha(){
+      if(recaptchaVerifier) return;
+      try{
+        recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+          size: "normal",
+          "expired-callback": () => {
+            alert("El reCAPTCHA expiró, recarga la página");
+          }
+        });
+        recaptchaVerifier.render();
+      }catch(e){
+        console.error("Error creando reCAPTCHA:", e);
+      }
     }
 
     // ---- Auth state
@@ -597,7 +578,7 @@ recaptchaVerifier.render().then((widgetId) => {
     // ✅ Admin state
     let isAdmin = false;
     let adminUnsub = null;
-    let adminCache = []; // para exportar rápido
+    let adminCache = [];
 
     function toggleAdminUI(){
       if(isAdmin){
@@ -652,18 +633,17 @@ recaptchaVerifier.render().then((widgetId) => {
 
       if(user){
         await ensureBusinessProfile(user);
-        await checkAdmin(user.uid); // ✅ aquí se activa admin si corresponde
+        await checkAdmin(user.uid);
         attachMineListener();
 
         if(!viewBusiness.classList.contains("hide")){
-          showBiz(isAdmin ? "publish" : "publish");
+          showBiz("publish");
         }
       }else{
         currentProfile = null;
         $("mineList").innerHTML = "";
         if(mineUnsub){ mineUnsub(); mineUnsub = null; }
 
-        // reset admin
         isAdmin = false;
         toggleAdminUI();
         adminCache = [];
@@ -686,15 +666,6 @@ recaptchaVerifier.render().then((widgetId) => {
       hide($("panelEmail")); show($("panelPhone"));
       setupRecaptcha();
     });
-
-    function setupRecaptcha(){
-      if(recaptcha) return;
-      try{
-        recaptcha = new RecaptchaVerifier(auth, "recaptcha-container", { size:"normal" });
-      }catch(e){
-        console.error(e);
-      }
-    }
 
     // ---- Email auth
     $("btnEmailRegister").addEventListener("click", async ()=>{
@@ -735,7 +706,7 @@ recaptchaVerifier.render().then((widgetId) => {
       if(!phone) return toast("Pon tu teléfono con código país. Ej: +53...");
       try{
         setupRecaptcha();
-        phoneConfirmation = await signInWithPhoneNumber(auth, phone, recaptcha);
+        phoneConfirmation = await signInWithPhoneNumber(auth, phone, recaptchaVerifier);
         toast("Código enviado. Revisa SMS ✅");
       }catch(e){
         console.error(e);
@@ -898,7 +869,6 @@ recaptchaVerifier.render().then((widgetId) => {
         </div>
       `;
 
-      // mine actions
       if(mode === "mine"){
         div.querySelector('[data-act="copy"]').addEventListener("click", ()=>{
           const txt = JSON.stringify({id, ...item}, null, 2);
@@ -911,7 +881,6 @@ recaptchaVerifier.render().then((widgetId) => {
         div.querySelector('[data-act="del"]').addEventListener("click", ()=>delOfferMine(id));
       }
 
-      // admin actions
       if(mode === "admin"){
         div.querySelector('[data-act="copy"]').addEventListener("click", ()=>{
           const txt = JSON.stringify({id, ...item}, null, 2);
@@ -967,7 +936,7 @@ recaptchaVerifier.render().then((widgetId) => {
       if(!viewPublic.classList.contains("hide")) renderPublic();
     });
 
-    // ---- Mis ofertas (listener único)
+    // ---- Mis ofertas
     $("btnRefreshMine").addEventListener("click", ()=>attachMineListener(true));
 
     function attachMineListener(forceOnce=false){
@@ -1024,7 +993,6 @@ recaptchaVerifier.render().then((widgetId) => {
       }
     }
 
-    // ✅ Admin: borrar cualquiera
     async function delOfferAdmin(id){
       if(!currentUser) return toast("Inicia sesión.");
       if(!isAdmin) return toast("No eres admin.");
@@ -1038,7 +1006,6 @@ recaptchaVerifier.render().then((widgetId) => {
       }
     }
 
-    // ---- Exportar / importar (MIS ofertas)
     function download(filename, text){
       const a = document.createElement("a");
       a.href = URL.createObjectURL(new Blob([text], {type:"application/json"}));
@@ -1067,7 +1034,7 @@ recaptchaVerifier.render().then((widgetId) => {
       copyToClipboard(json, ()=>toast("Copiado ✅"), ()=>toast("Copia manual abierta."));
     });
 
-    // ---- ADMIN: listener y herramientas
+    // ---- ADMIN
     $("btnRefreshAdmin").addEventListener("click", ()=>attachAdminListener(true));
     $("searchAdmin").addEventListener("input", ()=>{
       if(!secAdmin.classList.contains("hide")) renderAdminFromCache();
