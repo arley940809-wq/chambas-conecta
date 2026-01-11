@@ -527,6 +527,24 @@
     let currentProfile = null;
     let editingId = null;
     let mineUnsub = null;
+    let isAdmin = false;
+
+async function checkAdmin(uid){
+  try{
+    const snap = await get(ref(db, "admins/" + uid));
+    isAdmin = snap.exists();
+    toggleAdminUI();
+  }catch(e){
+    console.error("Error verificando admin", e);
+  }
+}
+
+function toggleAdminUI(){
+  const btn = document.getElementById("btnAdmin");
+  if(!btn) return;
+  if(isAdmin) btn.classList.remove("hide");
+  else btn.classList.add("hide");
+}
 
     function setSessionUI(user){
       currentUser = user || null;
@@ -560,6 +578,7 @@
 
       if(user){
         await ensureBusinessProfile(user);
+        await checkAdmin(user.uid);
         attachMineListener(); // una sola vez
         // si estás en Negocio, manda al panel publicar
         if(!viewBusiness.classList.contains("hide")) showBiz("publish");
