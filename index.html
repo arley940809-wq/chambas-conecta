@@ -471,6 +471,30 @@
       messagingSenderId: "342153426332",
       appId: "1:342153426332:web:aa5534dd8304186da00459"
     };
+// 🚀 Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+
+// 🔐 Inicializar Auth
+const auth = getAuth(app);
+
+// 🔐 reCAPTCHA obligatorio para login por teléfono
+window.recaptchaVerifier = new RecaptchaVerifier(
+  "recaptcha-container",
+  {
+    size: "normal",
+    callback: () => {
+      console.log("reCAPTCHA verificado");
+    },
+    "expired-callback": () => {
+      alert("El reCAPTCHA expiró, recarga la página");
+    }
+  },
+  auth
+);
+
+recaptchaVerifier.render().then((widgetId) => {
+  window.recaptchaWidgetId = widgetId;
+});
 
     // ---- UI helpers
     const $ = (id)=>document.getElementById(id);
