@@ -169,7 +169,6 @@
       <div class="card" id="cardPublic">
         <div class="hd">
           <div class="title">🌐 Público</div>
-          <p class="muted">Clientes ven ofertas sin login y pueden buscar.</p>
         </div>
         <div class="bd">
           <div class="row">
@@ -202,7 +201,6 @@
             <div class="title" style="margin:0">🔐 Negocio</div>
             <button class="btn small right" id="btnBackHome2">Inicio</button>
           </div>
-          <p class="muted">Panel organizado: elige una sección (no sale todo seguido).</p>
 
           <!-- barra panel -->
           <div class="panelNote">
@@ -221,28 +219,18 @@
               <button class="btn small wide" id="navMine">📌 Mis ofertas</button>
               <button class="btn small wide" id="navProfile">🏪 Perfil</button>
               <button class="btn small wide" id="navAccess">🔐 Acceso</button>
-
-              <!-- ✅ BOTÓN ADMIN (solo aparece si eres admin) -->
               <button class="btn small wide danger hide" id="navAdmin">🛡 Admin</button>
             </div>
-            <div class="tiny" style="margin-top:8px">Tip: si no has iniciado sesión, entra en <b>Acceso</b>.</div>
           </div>
 
           <div class="sep"></div>
 
-          <!-- SECCIÓN: ACCESO -->
+          <!-- SECCIÓN: ACCESO (SOLO CORREO) -->
           <div id="secAccess">
             <div class="card" style="box-shadow:none">
               <div class="bd">
                 <div class="title" style="font-size:20px;margin:0 0 6px;">🔐 Acceso</div>
-                <p class="muted">Puedes entrar con <b>correo</b> o con <b>teléfono</b>. Una de las dos.</p>
 
-                <div class="row">
-                  <button class="btn small" id="tabEmail">Usar correo</button>
-                  <button class="btn small secondary" id="tabPhone">Usar teléfono</button>
-                </div>
-
-                <!-- correo -->
                 <div id="panelEmail" style="margin-top:10px;">
                   <label>Correo</label>
                   <input class="input" id="email" placeholder="ej: negocio@gmail.com"/>
@@ -255,27 +243,6 @@
                     <button class="btn" id="btnEmailRegister">Crear cuenta</button>
                   </div>
                   <p class="tiny">* Al crear cuenta, se guarda tu perfil como <b>business</b> y ya puedes publicar.</p>
-                </div>
-
-                <!-- teléfono -->
-                <div id="panelPhone" class="hide" style="margin-top:10px;">
-                  <label>Teléfono (incluye código país)</label>
-                  <input class="input" id="phone" placeholder="+53xxxxxxx o +1xxxxxxxxxx"/>
-
-                  <div id="recaptcha-container" style="margin:12px 0;"></div>
-
-                  <div class="row" style="margin-top:10px;">
-                    <button class="btn primary" id="btnSendCode">Enviar código SMS</button>
-                  </div>
-
-                  <label>Código (OTP)</label>
-                  <input class="input" id="otp" placeholder="123456"/>
-
-                  <div class="row" style="margin-top:10px;">
-                    <button class="btn" id="btnVerifyCode">Verificar y Entrar</button>
-                  </div>
-
-                  <p class="tiny">* En teléfono, cuando entras por primera vez, también se crea tu perfil como <b>business</b>.</p>
                 </div>
               </div>
             </div>
@@ -340,7 +307,6 @@
                   <button class="btn secondary" id="btnClear">Limpiar</button>
                   <button class="btn danger" id="btnCancelEdit">Cancelar edición</button>
                 </div>
-                <p class="tiny">* La foto se guarda dentro del registro (base64). Luego podemos moverla a Storage.</p>
               </div>
             </div>
           </div>
@@ -442,10 +408,9 @@
       onAuthStateChanged,
       signOut,
       createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      RecaptchaVerifier,
-      signInWithPhoneNumber
+      signInWithEmailAndPassword
     } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
     import {
       getDatabase,
       ref,
@@ -476,10 +441,6 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // reCAPTCHA: se crea SOLO cuando entras a "Usar teléfono"
-    let recaptcha = null;
-    let phoneConfirmation = null;
-
     // ---- UI helpers
     const $ = (id)=>document.getElementById(id);
     const show = (el)=>el.classList.remove("hide");
@@ -490,7 +451,6 @@
     const cardPublic = $("cardPublic");
     const viewPublic = $("viewPublic");
     const viewBusiness = $("viewBusiness");
-    const fbStatus = $("fbStatus");
 
     function goHome(){
       show(cardPublic); hide(viewPublic); hide(viewBusiness);
@@ -509,7 +469,7 @@
     $("btnBackHome1").addEventListener("click", goHome);
     $("btnBackHome2").addEventListener("click", goHome);
 
-    // ---- Business panel show/hide (NO TODO SEGUIDO)
+    // ---- Business panel show/hide
     const secAccess  = $("secAccess");
     const secProfile = $("secProfile");
     const secPublish = $("secPublish");
@@ -537,7 +497,6 @@
         which = "access";
       }
 
-      // admin solo si isAdmin
       if(which === "admin" && !isAdmin){
         which = "publish";
       }
@@ -555,16 +514,6 @@
     navAccess.addEventListener("click", ()=>showBiz("access"));
     navAdmin.addEventListener("click", ()=>showBiz("admin"));
 
-    // ---- Firebase status UI (sin try duplicado)
-    try{
-      fbStatus.className = "status ok";
-      fbStatus.textContent = "Estado Firebase: ✅ CONECTADO";
-    }catch(e){
-      fbStatus.className = "status bad";
-      fbStatus.textContent = "Estado Firebase: ❌ ERROR";
-      console.error(e);
-    }
-
     // ---- Auth state
     let currentUser = null;
     let currentProfile = null;
@@ -574,7 +523,7 @@
     // ✅ Admin state
     let isAdmin = false;
     let adminUnsub = null;
-    let adminCache = []; // para exportar rápido
+    let adminCache = [];
 
     function toggleAdminUI(){
       if(isAdmin){
@@ -640,7 +589,6 @@
         $("mineList").innerHTML = "";
         if(mineUnsub){ mineUnsub(); mineUnsub = null; }
 
-        // reset admin
         isAdmin = false;
         toggleAdminUI();
         adminCache = [];
@@ -650,30 +598,6 @@
         if(!viewBusiness.classList.contains("hide")) showBiz("access");
       }
     });
-
-    // ---- Tabs correo/teléfono
-    $("tabEmail").addEventListener("click", ()=>{
-      $("tabEmail").classList.remove("secondary");
-      $("tabPhone").classList.add("secondary");
-      show($("panelEmail")); hide($("panelPhone"));
-    });
-    $("tabPhone").addEventListener("click", ()=>{
-      $("tabPhone").classList.remove("secondary");
-      $("tabEmail").classList.add("secondary");
-      hide($("panelEmail")); show($("panelPhone"));
-      setupRecaptcha();
-    });
-
-    function setupRecaptcha(){
-      if(recaptcha) return;
-      try{
-        // ✅ v10 modular: auth primero, luego container id
-        recaptcha = new RecaptchaVerifier(auth, "recaptcha-container", { size:"normal" });
-        recaptcha.render().catch(()=>{});
-      }catch(e){
-        console.error(e);
-      }
-    }
 
     // ---- Email auth
     $("btnEmailRegister").addEventListener("click", async ()=>{
@@ -705,36 +629,6 @@
       }catch(e){
         console.error(e);
         toast("Error: " + (e?.message || e));
-      }
-    });
-
-    // ---- Phone auth
-    $("btnSendCode").addEventListener("click", async ()=>{
-      const phone = $("phone").value.trim();
-      if(!phone) return toast("Pon tu teléfono con código país. Ej: +53...");
-      try{
-        setupRecaptcha();
-        phoneConfirmation = await signInWithPhoneNumber(auth, phone, recaptcha);
-        toast("Código enviado. Revisa SMS ✅");
-      }catch(e){
-        console.error(e);
-        toast("Error enviando SMS: " + (e?.message || e));
-      }
-    });
-
-    $("btnVerifyCode").addEventListener("click", async ()=>{
-      const otp = $("otp").value.trim();
-      if(!phoneConfirmation) return toast("Primero toca 'Enviar código SMS'.");
-      if(!otp) return toast("Escribe el código (OTP).");
-      try{
-        const cred = await phoneConfirmation.confirm(otp);
-        await ensureBusinessProfile(cred.user);
-        await checkAdmin(cred.user.uid);
-        toast("Entraste con teléfono ✅");
-        showBiz("publish");
-      }catch(e){
-        console.error(e);
-        toast("Código incorrecto o expirado: " + (e?.message || e));
       }
     });
 
@@ -774,7 +668,7 @@
 
     // ---- Publicar / editar
     $("btnPublish").addEventListener("click", async ()=>{
-      if(!currentUser) return toast("Primero inicia sesión (correo o teléfono).");
+      if(!currentUser) return toast("Primero inicia sesión (correo).");
       await ensureBusinessProfile(currentUser);
 
       const data = {
@@ -944,7 +838,7 @@
       if(!viewPublic.classList.contains("hide")) renderPublic();
     });
 
-    // ---- Mis ofertas (listener único)
+    // ---- Mis ofertas
     $("btnRefreshMine").addEventListener("click", ()=>attachMineListener(true));
 
     function attachMineListener(forceOnce=false){
@@ -1043,7 +937,7 @@
       copyToClipboard(json, ()=>toast("Copiado ✅"), ()=>toast("Copia manual abierta."));
     });
 
-    // ---- ADMIN: listener y herramientas
+    // ---- ADMIN
     $("btnRefreshAdmin").addEventListener("click", ()=>attachAdminListener(true));
     $("searchAdmin").addEventListener("input", ()=>{
       if(!secAdmin.classList.contains("hide")) renderAdminFromCache();
