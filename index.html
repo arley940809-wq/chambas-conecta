@@ -26,11 +26,12 @@
       --danger:#ff4d6d;
       --radius:18px;
       --shadow: 0 18px 60px rgba(0,0,0,.35);
-    }
-     /* ✅ Offline banner spacing */
+      }
+      /* ✅ Offline banner spacing */
 #offlineCard{
  margin-top:12px;
-}
+ }
+    
 
     *{box-sizing:border-box}
 
@@ -1321,31 +1322,62 @@
 
     // Default view
     goHome();
-    // imports Firebase
-import { ... } from "firebase-...";
-
-// helpers
-const $ = ...
-function toast(...) { ... }
-
-// (todo tu código grande: auth, renderPublic, etc.)
-
-// ===============================
+    // ===============================
 // ✅ OFFLINE / ONLINE UI
 // ===============================
 const offlineCard = document.getElementById("offlineCard");
 const btnRetry = document.getElementById("btnRetry");
 
 function setOfflineUI(isOffline){
-  ...
+  if(!offlineCard) return;
+
+  if(isOffline){
+    offlineCard.classList.remove("hide");
+    toast("Sin conexión 📵", "err");
+  }else{
+    offlineCard.classList.add("hide");
+  }
 }
 
+// Estado inicial
 setOfflineUI(!navigator.onLine);
 
-window.addEventListener("offline", ...);
-window.addEventListener("online", ...);
+// Cuando se va el internet
+window.addEventListener("offline", () => {
+  setOfflineUI(true);
+});
 
-btnRetry?.addEventListener("click", async () => { ... 
+// Cuando regresa el internet
+window.addEventListener("online", () => {
+  setOfflineUI(false);
+  toast("Conexión restaurada ✅");
+
+  // Si estás en público, recarga ofertas
+  try{
+    const viewPublic = document.getElementById("viewPublic");
+    if(viewPublic && !viewPublic.classList.contains("hide")){
+      renderPublic();
+    }
+  }catch(e){}
+});
+
+// Botón Reintentar
+btnRetry?.addEventListener("click", async () => {
+  toast("Reintentando…");
+
+  try{
+    await fetch("./index.html", { cache: "no-store" });
+    setOfflineUI(false);
+    toast("Conectado ✅");
+
+    const viewPublic = document.getElementById("viewPublic");
+    if(viewPublic && !viewPublic.classList.contains("hide")){
+      renderPublic();
+    }
+  }catch(e){
+    setOfflineUI(true);
+    toast("Todavía sin conexión 📵", "err");
+  }
 });
   </script>
 </body>
