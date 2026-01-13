@@ -2,8 +2,15 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+
   <title>Chambas Conecta</title>
+
+  <!-- PWA -->
+  <meta name="theme-color" content="#0b1a34">
+  <meta name="description" content="Plataforma local para conectar negocios y clientes en Chambas: ofertas con precios, fotos y contacto.">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
 
   <style>
     :root{
@@ -23,7 +30,7 @@
 
     *{box-sizing:border-box}
 
-    /* ✅ Portada (chambas-bg.jpg) + overlay (la foto se ve más) */
+    /* ✅ Portada + overlay (mejor en móvil: sin fixed para evitar lag) */
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -42,7 +49,11 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      background-attachment: fixed;
+
+      /* Evita tirones en Android */
+      background-attachment: scroll;
+      overscroll-behavior: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .wrap{max-width:760px;margin:0 auto;padding:18px 14px 40px;}
@@ -85,6 +96,7 @@
       font-weight:650;
       transition:.15s ease;
       min-width:140px;
+      user-select:none;
     }
     .btn:hover{transform:translateY(-1px)}
     .btn.primary{
@@ -182,7 +194,7 @@
     .toast{
       position:fixed;
       left:50%;
-      bottom:18px;
+      bottom:calc(18px + env(safe-area-inset-bottom));
       transform:translateX(-50%) translateY(10px);
       background:rgba(18,24,40,.96);
       border:1px solid rgba(255,255,255,.14);
@@ -203,6 +215,21 @@
     .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
     .toast.ok{background:linear-gradient(90deg, rgba(34,197,94,.92), rgba(22,163,74,.92)); border-color:rgba(255,255,255,.22); color:#061022}
     .toast.err{background:linear-gradient(90deg, rgba(239,68,68,.92), rgba(185,28,28,.92)); border-color:rgba(255,255,255,.22); color:#fff}
+
+    /* ✅ Banner instalar */
+    .installBar{
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.12);
+      border-radius:16px;
+      padding:12px;
+      display:none;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .installBar .txt{color:var(--muted); font-weight:650}
   </style>
 </head>
 
@@ -213,6 +240,12 @@
         <div class="pill">🟣 Plataforma local • Municipio Chambas</div>
         <h1>Chambas<br/>Conecta</h1>
         <p class="sub">Un lugar para conectar <b>negocios</b> y <b>clientes</b>: ofertas con precios, fotos y contacto.</p>
+
+        <!-- ✅ Barra instalar (aparece solo si el navegador lo permite) -->
+        <div class="installBar" id="installBar">
+          <div class="txt">📲 Instala Chambas Conecta en tu teléfono</div>
+          <button class="btn small primary" id="btnInstall">Instalar</button>
+        </div>
       </div>
       <div class="status" id="fbStatus">Estado Firebase: ⏳ verificando…</div>
     </div>
@@ -454,11 +487,57 @@
     </div>
   </div>
 
+  <!-- ✅ MODAL: CONFIRMAR (REEMPLAZA confirm()) -->
+  <div class="modal" id="confirmModal">
+    <div class="dialog">
+      <div class="row">
+        <h3 style="margin:0">Confirmar</h3>
+        <button class="btn small right" id="btnConfirmClose">Cerrar</button>
+      </div>
+      <p class="muted" id="confirmText">¿Seguro?</p>
+      <div class="row" style="margin-top:10px;">
+        <button class="btn danger" id="btnConfirmYes">Sí, continuar</button>
+        <button class="btn secondary" id="btnConfirmNo">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ✅ Toast -->
   <div id="toast" class="toast"></div>
 
   <script type="module">
-    // Firebase (CDN modular)
+    // ======= PWA: registrar Service Worker =======
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(()=>{});
+      });
+    }
+
+    // ======= PWA: Botón Instalar =======
+    let deferredPrompt = null;
+    const installBar = document.getElementById("installBar");
+    const btnInstall = document.getElementById("btnInstall");
+
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBar.style.display = "flex";
+    });
+
+    btnInstall?.addEventListener("click", async () => {
+      if(!deferredPrompt) return;
+      deferredPrompt.prompt();
+      try { await deferredPrompt.userChoice; } catch {}
+      deferredPrompt = null;
+      installBar.style.display = "none";
+    });
+
+    window.addEventListener("appinstalled", () => {
+      installBar.style.display = "none";
+      toast("¡Instalada ✅");
+    });
+
+    // ======= Firebase (CDN modular) =======
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
     import {
       getAuth,
@@ -503,7 +582,7 @@
     const show = (el)=>el.classList.remove("hide");
     const hide = (el)=>el.classList.add("hide");
 
-    // ✅ Toast (reemplaza alert)
+    // ✅ Toast
     let toastTimer = null;
     function toast(msg, type="ok"){
       const el = $("toast");
@@ -513,6 +592,24 @@
       el.classList.add(type === "err" ? "err" : "ok","show");
       clearTimeout(toastTimer);
       toastTimer = setTimeout(()=>el.classList.remove("show"), 2200);
+    }
+
+    // ✅ Confirm modal (reemplaza confirm())
+    let confirmResolve = null;
+    const confirmModal = $("confirmModal");
+    $("btnConfirmClose").addEventListener("click", ()=>closeConfirm(false));
+    $("btnConfirmNo").addEventListener("click", ()=>closeConfirm(false));
+    $("btnConfirmYes").addEventListener("click", ()=>closeConfirm(true));
+    confirmModal.addEventListener("click",(e)=>{ if(e.target===confirmModal) closeConfirm(false); });
+
+    function closeConfirm(val){
+      confirmModal.style.display = "none";
+      if(confirmResolve){ confirmResolve(val); confirmResolve = null; }
+    }
+    function askConfirm(message){
+      $("confirmText").textContent = message || "¿Seguro?";
+      confirmModal.style.display = "flex";
+      return new Promise((resolve)=>{ confirmResolve = resolve; });
     }
 
     // ---- Views
@@ -826,7 +923,7 @@
           <div class="muted" style="margin-bottom:10px">${escapeHtml(item.desc||"")}</div>
           <div class="row" style="gap:10px; margin-bottom:10px;">
             ${item.phone ? `<a class="btn secondary" style="text-decoration:none;text-align:center" href="tel:${encodeURIComponent(item.phone)}">📞 Llamar</a>` : ``}
-            ${item.whatsapp ? `<a class="btn secondary" style="text-decoration:none;text-align:center" href="https://wa.me/${encodeURIComponent((item.whatsapp||"").replace(/[^0-9]/g,''))}" target="_blank">💬 WhatsApp</a>` : ``}
+            ${item.whatsapp ? `<a class="btn secondary" style="text-decoration:none;text-align:center" href="https://wa.me/${encodeURIComponent((item.whatsapp||"").replace(/[^0-9]/g,''))}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ``}
           </div>
 
           ${(mode === "mine") ? `
@@ -959,7 +1056,8 @@
 
     async function delOfferMine(id){
       if(!currentUser) return toast("Inicia sesión.", "err");
-      if(!confirm("¿Seguro que quieres borrar esta oferta?")) return;
+      const ok = await askConfirm("¿Seguro que quieres borrar esta oferta?");
+      if(!ok) return;
       try{
         await remove(ref(db, "publicaciones/" + id));
         toast("Borrada ✅");
@@ -972,7 +1070,8 @@
     async function delOfferAdmin(id){
       if(!currentUser) return toast("Inicia sesión.", "err");
       if(!isAdmin) return toast("No eres admin.", "err");
-      if(!confirm("ADMIN: ¿borrar esta oferta?")) return;
+      const ok = await askConfirm("ADMIN: ¿borrar esta oferta?");
+      if(!ok) return;
       try{
         await remove(ref(db, "publicaciones/" + id));
         toast("Borrada (admin) ✅");
@@ -1073,9 +1172,9 @@
     $("btnAdminDeleteAll").addEventListener("click", async ()=>{
       if(!currentUser) return toast("Inicia sesión.", "err");
       if(!isAdmin) return toast("No eres admin.", "err");
-      const ok = confirm("⚠️ ADMIN: ¿Seguro que quieres BORRAR TODO 'publicaciones'?");
-      if(!ok) return;
-      const ok2 = confirm("Última confirmación: esto no se puede deshacer. ¿BORRAR TODO?");
+      const ok1 = await askConfirm("⚠️ ADMIN: ¿Seguro que quieres BORRAR TODO 'publicaciones'?");
+      if(!ok1) return;
+      const ok2 = await askConfirm("Última confirmación: esto no se puede deshacer. ¿BORRAR TODO?");
       if(!ok2) return;
       try{
         await remove(ref(db, "publicaciones"));
