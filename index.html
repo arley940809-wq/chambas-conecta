@@ -1321,6 +1321,31 @@
 
     // Default view
     goHome();
+    // imports Firebase
+import { ... } from "firebase-...";
+
+// helpers
+const $ = ...
+function toast(...) { ... }
+
+// (todo tu código grande: auth, renderPublic, etc.)
+
+// ===============================
+// ✅ OFFLINE / ONLINE UI
+// ===============================
+const offlineCard = document.getElementById("offlineCard");
+const btnRetry = document.getElementById("btnRetry");
+
+function setOfflineUI(isOffline){
+  ...
+}
+
+setOfflineUI(!navigator.onLine);
+
+window.addEventListener("offline", ...);
+window.addEventListener("online", ...);
+
+btnRetry?.addEventListener("click", async () => { ... });
   </script>
 </body>
 </html>
