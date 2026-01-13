@@ -1,11 +1,13 @@
 {
   "name": "Chambas Conecta",
   "short_name": "Chambas",
+  "lang": "es",
   "description": "Plataforma local para conectar negocios y clientes en Chambas.",
-  "id": "./",
-  "start_url": "./",
+  "id": "./index.html",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#061022",
   "theme_color": "#0b1a34",
   "icons": [
